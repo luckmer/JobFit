@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 
-from routes import health_router
+from routes import health_router, jobs_router
 from database import db
 
 
@@ -26,3 +26,4 @@ app.add_middleware(
 
 
 app.include_router(health_router)
+app.include_router(jobs_router)

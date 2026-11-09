@@ -1,9 +1,13 @@
 import "@styles/import.css";
 import "@styles/tailwind.css";
+import { cn } from "cn";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { Toaster } from "sonner";
 import { StoreProvider } from "./StoreProvider";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const generalSans = localFont({
   src: "../common/font/Sans/GeneralSans-Variable.ttf",
@@ -19,7 +23,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={` ${generalSans.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={cn(
+        "h-full",
+        "antialiased",
+        generalSans.variable,
+        "font-sans",
+        inter.variable,
+      )}
+    >
       <body className="flex flex-col">
         <StoreProvider>
           <Toaster

@@ -3,11 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 
 from routes import health_router
+from database import db
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    db.connect()
     yield
+    db.close()
 
 
 app = FastAPI(lifespan=lifespan)

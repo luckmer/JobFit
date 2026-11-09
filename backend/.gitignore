@@ -20,6 +20,8 @@ ENV/
 .env.*
 !.env.example
 
+database.*
+
 # SQLite databases
 *.db
 *.sqlite3

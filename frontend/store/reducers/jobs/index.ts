@@ -1,6 +1,6 @@
-import { Job } from "@interfaces//job/types";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { PayloadType } from "@store/helper";
+import type { Job } from "@interfaces/job/types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadType } from "@store/helper";
 
 export const jobStore = "jobStore";
 

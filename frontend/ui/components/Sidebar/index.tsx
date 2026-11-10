@@ -10,16 +10,17 @@ import {
   Sparkles,
   SquareKanban,
 } from "lucide-react";
+import Link from "next/link";
 import type { FC } from "react";
 
 const data = [
-  { name: "Overview", icon: LayoutDashboard },
-  { name: "Applications", icon: SquareKanban },
-  { name: "My resumes", icon: FileText },
-  { name: "AI Resume Matcher", icon: ScanSearch },
-  { name: "Career Assistant", icon: Bot },
-  { name: "Statistics", icon: ChartColumnDecreasing },
-  { name: "Settings", icon: Settings },
+  { href: "/", name: "Overview", icon: LayoutDashboard },
+  { href: "/applications", name: "Applications", icon: SquareKanban },
+  { href: "/resumes", name: "My resumes", icon: FileText },
+  { href: "/matcher", name: "AI Resume Matcher", icon: ScanSearch },
+  { href: "/assistant", name: "Career Assistant", icon: Bot },
+  { href: "/statistics", name: "Statistics", icon: ChartColumnDecreasing },
+  { href: "/settings", name: "Settings", icon: Settings },
 ];
 
 export interface IProps {
@@ -37,14 +38,16 @@ export const Sidebar: FC<IProps> = ({ activeRoot }) => {
           <Typography>JobFit</Typography>
         </div>
       </section>
-      <section className="flex-1 space-y-0.5 px-2 py-2">
-        {data.map(({ name, icon: Icon }) => {
-          const isActive = name === activeRoot;
+      <nav className="flex-1 space-y-0.5 px-2 py-2">
+        {data.map(({ href, name, icon: Icon }) => {
+          const isActive = href === activeRoot;
           return (
-            <div
-              key={name}
+            <Link
+              key={href}
+              href={href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex items-center gap-2.5 rounded px-2.5 py-2 transition-colors cursor-pointer",
+                "flex items-center gap-2.5 rounded px-2.5 py-2 transition-colors",
                 isActive ? "bg-active" : "hover:bg-hover",
               )}
             >
@@ -57,10 +60,10 @@ export const Sidebar: FC<IProps> = ({ activeRoot }) => {
               <Typography color={isActive ? "primary" : "mutedForeground"}>
                 {name}
               </Typography>
-            </div>
+            </Link>
           );
         })}
-      </section>
+      </nav>
     </aside>
   );
 };

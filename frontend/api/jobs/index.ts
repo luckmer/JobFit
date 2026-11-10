@@ -1,6 +1,6 @@
 "use server";
 
-import { JobsResponse } from "@interfaces//job/types";
+import type { JobsResponse } from "@interfaces/job/types";
 import { getApi } from "@libs/ApiService";
 import { ENDPOINTS } from "@static/endpoints";
 

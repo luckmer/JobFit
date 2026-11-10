@@ -1,5 +1,10 @@
+"use client";
+
 import { Sidebar } from "@components/Sidebar";
+import { usePathname } from "next/navigation";
 
 export const SidebarRoot = () => {
-  return <Sidebar activeRoot="Overview" />;
+  const pathname = usePathname();
+
+  return <Sidebar activeRoot={pathname} />;
 };

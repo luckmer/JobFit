@@ -23,7 +23,7 @@
       "@components/*": ["./ui/components/*"],
       "@static/*": ["./static/*"],
       "@pages/*": ["./ui/pages/*"],
-      "@interfaces/*": ["./interfaces*"],
+      "@interfaces/*": ["./interfaces/*"],
       "@api/*": ["./api/*"],
       "@libs/*": ["./libs/*"],
       "@common/*": ["./common/*"],

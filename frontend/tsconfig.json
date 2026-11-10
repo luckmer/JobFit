@@ -27,6 +27,7 @@
       "@api/*": ["./api/*"],
       "@libs/*": ["./libs/*"],
       "@common/*": ["./common/*"],
+      "@hooks/*": ["./hooks/*"],
       "@styles/*": ["./styles/*"],
     },
   },

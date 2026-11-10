@@ -1,40 +1,20 @@
-import { buttonCva } from "@common/cva/button";
+"use client";
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
+import { buttonVariants } from "@common/cva/button";
 import type { VariantProps } from "class-variance-authority";
-import clsx from "clsx";
-import type { CSSProperties } from "react";
+import { cn } from "cn";
 
-export interface IProps {
-  onClick?: () => void;
-  class?: string;
-  children: React.ReactNode;
-  disabled?: boolean;
-  style?: CSSProperties;
-  type?: "button" | "submit";
-}
-
-export interface ButtonProps extends IProps, VariantProps<typeof buttonCva> {}
-
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  onClick,
-  disabled,
-  type,
+export const Button = ({
+  className,
+  variant = "default",
+  size = "default",
   ...props
-}) => (
-  <button
-    type={type}
-    disabled={disabled}
-    onClick={(e) => {
-      if (type === "submit") return;
-      e.preventDefault();
-      onClick?.();
-    }}
-    className={buttonCva({
-      ...props,
-      class: clsx(props.class, disabled && "opacity-50 cursor-not-allowed!"),
-    })}
-    style={props.style}
-  >
-    {children}
-  </button>
-);
+}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) => {
+  return (
+    <ButtonPrimitive
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  );
+};

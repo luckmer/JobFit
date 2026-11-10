@@ -1,5 +1,9 @@
 "use client";
 
-export default function Home() {
-  return <main className=""></main>;
-}
+import { Overview } from "@pages/Overview";
+
+const OverviewRoot = () => {
+  return <Overview />;
+};
+
+export default OverviewRoot;

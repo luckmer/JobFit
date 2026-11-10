@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { PayloadType } from "@store/helper";
 
 export const uiStore = "uiStore";
 
@@ -12,5 +13,6 @@ export const store = createSlice({
   reducers: {},
 });
 
-export const reducers = store.reducer;
-export const actions = store.actions;
+export const uiReducers = store.reducer;
+export const uiActions = store.actions;
+export type PayloadTypes = PayloadType<typeof uiActions>;

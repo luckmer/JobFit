@@ -1,4 +1,4 @@
-import { ApiServiceCore } from "./ApiServiceCore";
+import { ApiServiceCore } from "./apiServiceCore";
 
 export class ApiService extends ApiServiceCore {
   get<T>(path: string, headers?: Record<string, string>): Promise<T> {

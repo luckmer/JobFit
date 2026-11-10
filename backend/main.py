@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI
 
-from routes import health_router, jobs_router
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from database import db
+from routes import health_router, jobs_router
 
 
 @asynccontextmanager

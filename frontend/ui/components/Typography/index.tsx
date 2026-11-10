@@ -10,8 +10,7 @@ export interface IProps {
 }
 
 export interface TypographyProps
-  extends IProps,
-    VariantProps<typeof typography> {}
+  extends IProps, VariantProps<typeof typography> {}
 
 export const Typography: React.FC<TypographyProps> = (props) => (
   <p

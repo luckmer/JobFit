@@ -1,4 +1,4 @@
-from .jobs_migration import jobs_table, job_events_table, job_rankings_table
+from .jobs_migration import job_events_table, job_rankings_table, jobs_table
 
 MIGRATIONS = [
     jobs_table,

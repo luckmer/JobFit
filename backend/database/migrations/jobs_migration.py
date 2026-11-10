@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   salary               TEXT,
   posted               TEXT,
   status               TEXT,
+  stage                TEXT,
   first_seen           TEXT,
   last_updated         TEXT,
   fit                  TEXT,

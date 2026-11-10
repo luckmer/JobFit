@@ -1,6 +1,8 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import { reducers as uiReducers, uiStore } from "./ui";
+import { uiReducers, uiStore } from "./ui";
+import { jobStore, jobReducers } from "./jobs";
 
 export const index = combineReducers({
   [uiStore]: uiReducers,
+  [jobStore]: jobReducers,
 });

@@ -1,3 +1,6 @@
-from .jobs_service import get_jobs_service, JobsService
+from .jobs_service import JobsService, get_jobs_service
 
-__all__ = ["get_jobs_service", "JobsService"]
+__all__ = [
+    "JobsService",
+    "get_jobs_service",
+]

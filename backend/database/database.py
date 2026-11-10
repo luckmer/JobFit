@@ -1,6 +1,7 @@
 import sqlite3
 from collections.abc import Sequence
 from typing import Any
+
 from .migrations import run_migrations
 
 

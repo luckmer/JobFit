@@ -48,3 +48,5 @@ htmlcov/
 
 # FastAPI / uvicorn
 *.pid
+
+TODO.*

@@ -1,3 +1,4 @@
+"use client";
 import { Typography } from "@components/Typography";
 import { ExternalLink } from "lucide-react";
 import type { FC } from "react";
@@ -8,7 +9,6 @@ export interface IProps {
   company: string;
   link: string;
   salary?: string;
-  applied: string;
   rank?: string;
   id: string;
 }
@@ -39,9 +39,10 @@ export const Card: FC<IProps> = ({
           <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
         </a>
       </div>
-      <div className="mt-1 truncate text-xs text-muted-foreground">
-        {company}
-        <span className="text-s-teal"> · {location}</span>
+      <div className="mt-1 truncate text-xs text-muted-foreground py-1">
+        <Typography text="small" color="mutedForeground">
+          {company} · {location}
+        </Typography>
       </div>
       <div className="mt-2 flex items-center gap-1.5 text-[11px]">
         <Typography text="small" color="faint">

@@ -1,16 +1,32 @@
-jobs_table = """
+STATUSES = (
+    "new",
+    "ranked",
+    "applied",
+    "screening",
+    "techInterview",
+    "finalRound",
+    "offer",
+    "rejected",
+    "skipped",
+)
+
+status_list = ", ".join(f"'{s}'" for s in STATUSES)
+
+jobs_table = f"""
 CREATE TABLE IF NOT EXISTS jobs (
   id                   INTEGER PRIMARY KEY AUTOINCREMENT,
   key                  TEXT NOT NULL UNIQUE,
-  title                TEXT,
-  company              TEXT,
-  url                  TEXT,
+  title                TEXT NOT NULL,
+  company              TEXT NOT NULL,
+  url                  TEXT NOT NULL,
   portal               TEXT,
   work_mode            TEXT,
   salary               TEXT,
   posted               TEXT,
-  status               TEXT,
-  stage                TEXT,
+  location             TEXT NOT NULL,
+  status               TEXT NOT NULL DEFAULT 'new'
+                         CHECK (status IN ({status_list})),
+  stage                TEXT NOT NULL,
   first_seen           TEXT,
   last_updated         TEXT,
   fit                  TEXT,

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { PayloadType } from "@store/helper";
+import type { PayloadType } from "@store/helper";
 
 export const uiStore = "uiStore";
 

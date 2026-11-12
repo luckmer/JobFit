@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 
+from schemas import JobPatch
 from schemas.job_schema import CreateJobSchema
 from services import JobsService, get_jobs_service
 
@@ -21,8 +22,25 @@ def get_jobs(
 
 
 @router.post("/")
-async def create_job(
+def create_job(
     jobs_service: Annotated[JobsService, Depends(get_jobs_service)],
     job: CreateJobSchema,
-) -> None:
+):
     return jobs_service.create_job(job)
+
+
+@router.patch("/{id}")
+def patch_job(
+    id: int,
+    jobs_service: Annotated[JobsService, Depends(get_jobs_service)],
+    payload: JobPatch,
+):
+    return jobs_service.patch_job(id, payload)
+
+
+@router.delete("/{id}")
+def delete_job(
+    id: int,
+    jobs_service: Annotated[JobsService, Depends(get_jobs_service)],
+) -> None:
+    return jobs_service.delete_job(id)

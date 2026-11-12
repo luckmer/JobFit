@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: "fitJob",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children, modals }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
@@ -34,7 +34,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             closeButton
             duration={3000}
           />
-          <div className="min-w-0 flex-1">{children}</div>
+          <div className="min-w-0 flex-1">
+            {modals}
+            {children}
+          </div>
         </StoreProvider>
       </body>
     </html>

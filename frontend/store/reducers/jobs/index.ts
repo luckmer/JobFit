@@ -1,4 +1,5 @@
-import type { Job } from "@interfaces/job/types";
+import type { Job, JobPatch } from "@interfaces/job/types";
+import type { ColumnId } from "@interfaces/overview/types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { PayloadType } from "@store/helper";
 
@@ -28,6 +29,46 @@ export const store = createSlice({
     ) {
       state.jobs = action.payload.jobs;
       state.jobNextCursor = action.payload.nextCursor;
+      return state;
+    },
+
+    updateJob(state, action: PayloadAction<Job>) {
+      const index = state.jobs.findIndex((job) => job.id === action.payload.id);
+      if (index !== -1) {
+        state.jobs[index] = action.payload;
+      }
+      return state;
+    },
+
+    updateJobStage(
+      state,
+      action: PayloadAction<{
+        id: string;
+        column: ColumnId;
+        prevColumn: ColumnId;
+      }>,
+    ) {
+      const index = state.jobs.findIndex(
+        (job) => job.id === parseInt(action.payload.id, 10),
+      );
+
+      if (index !== -1) {
+        state.jobs[index].stage = action.payload.column;
+      }
+
+      return state;
+    },
+
+    removeJob(state, action: PayloadAction<number>) {
+      state.jobs = state.jobs.filter((job) => job.id !== action.payload);
+      return state;
+    },
+
+    patchJob(state, _: PayloadAction<{ data: JobPatch; id: number }>) {
+      return state;
+    },
+
+    deleteJob(state, _: PayloadAction<number>) {
       return state;
     },
   },

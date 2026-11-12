@@ -1,7 +1,10 @@
+from typing import Annotated
+
 from fastapi import Depends
 
 from database.repositories import JobsRepository, get_jobs_repository
-from schemas.job_schema import CreateJobSchema, JobsResponse
+from schemas import JobPatch
+from schemas.job_schema import CreateJobSchema, JobSchema, JobsResponse
 from utils.cursor import CursorPagination
 
 
@@ -44,11 +47,19 @@ class JobsService:
             next_cursor=next_cursor,
         )
 
-    def create_job(self, job: CreateJobSchema) -> None:
-        self.jobs_repository.create_user_recent_job(job)
+    def create_job(self, job: CreateJobSchema) -> JobSchema:
+        id = self.jobs_repository.create_user_recent_job(job)
+        return self.jobs_repository.get_job_by_id(id)
+
+    def patch_job(self, id: int, payload: JobPatch) -> JobSchema:
+        patch_id = self.jobs_repository.patch_user_recent_job(id, payload)
+        return self.jobs_repository.get_job_by_id(patch_id)
+
+    def delete_job(self, id: int) -> None:
+        self.jobs_repository.delete_user_recent_job(id)
 
 
 def get_jobs_service(
-    jobs_repository: JobsRepository = Depends(get_jobs_repository),
+    jobs_repository: Annotated[JobsRepository, Depends(get_jobs_repository)],
 ) -> JobsService:
     return JobsService(jobs_repository)

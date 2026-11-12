@@ -52,8 +52,11 @@ class JobsService:
         return self.jobs_repository.get_job_by_id(id)
 
     def patch_job(self, id: int, payload: JobPatch) -> JobSchema:
-        patch_id = self.jobs_repository.patch_user_recent_job(id, payload)
-        return self.jobs_repository.get_job_by_id(patch_id)
+        self.jobs_repository.patch_user_recent_job(id, payload)
+        self.jobs_repository.add_user_job_event(
+            id, payload.stage, payload.event_date, payload.notes
+        )
+        return self.jobs_repository.get_job_by_id(id)
 
     def delete_job(self, id: int) -> None:
         self.jobs_repository.delete_user_recent_job(id)

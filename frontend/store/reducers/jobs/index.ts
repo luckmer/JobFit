@@ -8,27 +8,40 @@ export const jobStore = "jobStore";
 export type IJobState = {
   jobs: Job[];
   jobNextCursor: string | null;
+  isLoadingJobs: boolean;
 };
 
 export const defaultState: IJobState = {
   jobs: [],
   jobNextCursor: null,
+  isLoadingJobs: true,
 };
 
 export const store = createSlice({
   name: jobStore,
   initialState: defaultState,
   reducers: {
+    clearJobs(state) {
+      state.jobs = [];
+      state.jobNextCursor = null;
+    },
+
     fetchJobs(state) {
+      state.isLoadingJobs = true;
       return state;
     },
 
     setJobs(
       state,
-      action: PayloadAction<{ jobs: Job[]; nextCursor: string | null }>,
+      action: PayloadAction<{
+        jobs: Job[];
+        nextCursor: string | null;
+        isLoadingJobs: boolean;
+      }>,
     ) {
       state.jobs = action.payload.jobs;
       state.jobNextCursor = action.payload.nextCursor;
+      state.isLoadingJobs = false;
       return state;
     },
 
@@ -43,6 +56,7 @@ export const store = createSlice({
     updateJobStage(
       state,
       action: PayloadAction<{
+        date: string;
         id: string;
         column: ColumnId;
         prevColumn: ColumnId;

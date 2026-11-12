@@ -6,8 +6,8 @@ get_user_recent_jobs_query = """
 """
 
 insert_job_offer = """
-INSERT INTO jobs (key, title, company, url,location, status,stage, first_seen, last_updated)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO jobs (key, title, company, url,location, stage, first_seen, last_updated)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 """
 
 insert_job_event = """

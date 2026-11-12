@@ -24,9 +24,8 @@ CREATE TABLE IF NOT EXISTS jobs (
   salary               TEXT,
   posted               TEXT,
   location             TEXT NOT NULL,
-  status               TEXT NOT NULL DEFAULT 'new'
-                         CHECK (status IN ({status_list})),
-  stage                TEXT NOT NULL,
+  stage               TEXT NOT NULL DEFAULT 'new'
+                         CHECK (stage IN ({status_list})),
   first_seen           TEXT,
   last_updated         TEXT,
   fit                  TEXT,

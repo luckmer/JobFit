@@ -2,15 +2,7 @@ import { deleteJobApi, getJobsApi, patchJobApi } from "@api/jobs";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { jobActions, type PayloadTypes } from "@store/reducers/jobs";
 import { jobsSelector } from "@store/selectors/jobs";
-import {
-  all,
-  call,
-  debounce,
-  put,
-  select,
-  takeEvery,
-  takeLatest,
-} from "typed-redux-saga";
+import { all, call, debounce, put, select, takeEvery } from "typed-redux-saga";
 
 export function* fetchJobs() {
   const data = yield* call(getJobsApi);
@@ -19,6 +11,7 @@ export function* fetchJobs() {
     jobActions.setJobs({
       jobs: data?.jobs ?? [],
       nextCursor: data?.next_cursor ?? null,
+      isLoadingJobs: false,
     }),
   );
 }
@@ -40,6 +33,7 @@ export function* updateJobStage(
 
   try {
     yield* call(patchJobApi, parseInt(action.payload.id, 10), {
+      event_date: action.payload.date,
       stage: job.stage,
     });
   } catch (err) {
@@ -47,6 +41,7 @@ export function* updateJobStage(
     yield* put(
       jobActions.updateJobStage({
         id: action.payload.id,
+        date: action.payload.date,
         column: action.payload.prevColumn,
         prevColumn: action.payload.prevColumn,
       }),
@@ -60,7 +55,7 @@ export function* deleteJob(action: PayloadAction<PayloadTypes["deleteJob"]>) {
 }
 
 export function* fetchJobsSaga() {
-  yield* takeLatest(jobActions.fetchJobs, fetchJobs);
+  yield* debounce(200, jobActions.fetchJobs, fetchJobs);
 }
 
 export function* updateJobStageSaga() {

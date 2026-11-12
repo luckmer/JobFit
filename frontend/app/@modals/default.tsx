@@ -1,5 +1,13 @@
+import { NewApplicationModalRoot } from "./NewApplicationModalRoot";
+import { StageModalRoot } from "./StageModalRoot";
+
 const ModalsRoot = () => {
-  return <></>;
+  return (
+    <>
+      <StageModalRoot />
+      <NewApplicationModalRoot />
+    </>
+  );
 };
 
 export default ModalsRoot;

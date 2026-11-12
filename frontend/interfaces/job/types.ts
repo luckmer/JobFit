@@ -42,7 +42,9 @@ export type JobsResponse = {
 };
 
 export interface JobPatch {
-  stage?: string;
+  stage: string;
+  event_date: string; // "YYYY-MM-DD"
+  notes?: string;
   title?: string;
   company?: string;
   url?: string;
@@ -53,7 +55,6 @@ export interface JobPatch {
   status?: string;
   fit?: string;
   location?: string;
-  notes?: string;
   outcome?: string;
   duplicate_of?: number;
   excluded_reason?: string;

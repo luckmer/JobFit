@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Annotated
 
 from fastapi import Depends
@@ -33,7 +34,6 @@ class JobsRepository:
                 job.company,
                 str(job.url),
                 job.location,
-                job.status,
                 job.stage,
                 job.first_seen.isoformat(),
                 job.last_updated.isoformat(),
@@ -51,16 +51,20 @@ class JobsRepository:
 
         return JobSchema(**row)
 
-    def patch_user_recent_job(self, id: int, payload: JobPatch) -> int | None:
+    def add_user_job_event(
+        self, id: int, stage: str, event_date: date, note: str | None
+    ):
+        self.db.execute(insert_job_event, (id, stage, event_date, note))
 
+    def patch_user_recent_job(self, id: int, payload: JobPatch) -> int | None:
         self.get_job_by_id(id)
 
-        changes = payload.model_dump(exclude_unset=True)
+        changes = payload.model_dump(exclude_unset=True, exclude={"event_date"})
 
         if not changes:
             return None
-        set_clause = ", ".join(f"{col} = ?" for col in changes)
 
+        set_clause = ", ".join(f"{col} = ?" for col in changes)
         self.db.execute(
             f"UPDATE jobs SET {set_clause} WHERE id = ?",
             (*changes.values(), id),

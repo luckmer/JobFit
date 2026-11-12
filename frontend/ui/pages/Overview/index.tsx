@@ -2,6 +2,8 @@
 
 import { Card } from "@components/Card";
 import { ColumnHeader } from "@components/ColumnHeader";
+import { FloatingToolbar } from "@components/FloatingToolbar";
+import type { FLOATING_TOOLBAR_KEYS } from "@interfaces/constants/enums";
 import type { Job } from "@interfaces/job/types";
 import type { ColumnId } from "@interfaces/overview/types";
 import { type DragEvent, type FC, useState } from "react";
@@ -23,15 +25,23 @@ const COLUMNS = [
 ] as const;
 
 export interface IProps {
+  onClickToolbarAction: (key: FLOATING_TOOLBAR_KEYS) => void;
   handleUpdateStage: (
     id: string,
     column: ColumnId,
+    company: string,
     prevColumn: ColumnId,
   ) => void;
+  isLoadingJobs: boolean;
   jobs: Job[];
 }
 
-export const Overview: FC<IProps> = ({ jobs, handleUpdateStage }) => {
+export const Overview: FC<IProps> = ({
+  jobs,
+  isLoadingJobs,
+  handleUpdateStage,
+  onClickToolbarAction,
+}) => {
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [overColumn, setOverColumn] = useState<ColumnId | null>(null);
 
@@ -66,12 +76,16 @@ export const Overview: FC<IProps> = ({ jobs, handleUpdateStage }) => {
       handleDragEnd();
       return;
     }
-    handleUpdateStage(id, column, job.stage);
+    handleUpdateStage(id, column, `${job.company} - ${job.title}`, job.stage);
     handleDragEnd();
   };
 
   return (
     <main className="min-w-0 flex-1">
+      <FloatingToolbar
+        isLoadingJobs={isLoadingJobs}
+        onClickToolbarAction={onClickToolbarAction}
+      />
       <div className="relative flex h-screen flex-col">
         <div className="flex flex-1 overflow-x-auto">
           {COLUMNS.map((col) => {

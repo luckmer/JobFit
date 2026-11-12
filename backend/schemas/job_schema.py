@@ -32,7 +32,6 @@ class CreateJobSchema(BaseModel):
     title: str
     company: str
     url: str
-    status: str
     stage: str
     first_seen: date
     last_updated: date
@@ -47,7 +46,8 @@ class JobsResponse(BaseModel):
 
 class JobPatch(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    stage: str | None = None
+    stage: str
+    event_date: date
     title: str | None = None
     company: str | None = None
     url: str | None = None
@@ -55,7 +55,6 @@ class JobPatch(BaseModel):
     work_mode: str | None = None
     salary: str | None = None
     posted: str | None = None
-    status: str | None = None
     fit: str | None = None
     location: str | None = None
     notes: str | None = None

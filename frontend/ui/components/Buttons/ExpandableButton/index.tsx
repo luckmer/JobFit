@@ -1,7 +1,7 @@
 "use client";
 import { Typography } from "@components/Typography";
 import { AnimatePresence, motion } from "framer-motion";
-import { type FC, useState } from "react";
+import { type FC, useRef, useState } from "react";
 
 interface IProps {
   onClick: () => void;
@@ -17,22 +17,34 @@ export const ExpandableButton: FC<IProps> = ({
   loader = false,
 }) => {
   const [open, setOpen] = useState(false);
+  const justClicked = useRef(false);
 
   return (
     <motion.button
       layout
       onClick={() => {
         if (loader) return;
+        justClicked.current = true;
+        setOpen(false);
         onClick();
       }}
       aria-disabled={loader}
       aria-busy={loader}
       onHoverStart={() => setOpen(true)}
       onHoverEnd={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={() => setOpen(false)}
+      onFocus={(e) => {
+        if (justClicked.current) {
+          justClicked.current = false;
+          return;
+        }
+        if (e.currentTarget.matches(":focus-visible")) setOpen(true);
+      }}
+      onBlur={() => {
+        justClicked.current = false;
+        setOpen(false);
+      }}
       aria-label={label}
-      className="flex h-9 items-center rounded-lg px-2.5 hover:bg-white/5 cursor-pointer   aria-disabled:opacity-70 aria-disabled:hover:bg-transparent"
+      className="flex h-9 items-center rounded-lg px-2.5 hover:bg-white/5 cursor-pointer aria-disabled:opacity-70 aria-disabled:hover:bg-transparent"
     >
       <motion.span
         className="flex"
@@ -52,7 +64,7 @@ export const ExpandableButton: FC<IProps> = ({
             animate={{ width: "auto", opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="overflow-hidden whitespace-nowrap text-sm "
+            className="overflow-hidden whitespace-nowrap text-sm"
           >
             <Typography text="caption" class="pl-2">
               {label}

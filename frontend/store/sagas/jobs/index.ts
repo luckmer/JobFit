@@ -1,4 +1,4 @@
-import { deleteJobApi, getJobsApi, patchJobApi } from "@api/jobs";
+import { createJobApi, deleteJobApi, getJobsApi, patchJobApi } from "@api/jobs";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { jobActions, type PayloadTypes } from "@store/reducers/jobs";
 import { jobsSelector } from "@store/selectors/jobs";
@@ -49,6 +49,15 @@ export function* updateJobStage(
   }
 }
 
+export function* createJob(action: PayloadAction<PayloadTypes["createJob"]>) {
+  try {
+    const job = yield* call(createJobApi, action.payload);
+    yield* put(jobActions.setJob(job));
+  } catch (err) {
+    console.log("failed to create job", err);
+  }
+}
+
 export function* deleteJob(action: PayloadAction<PayloadTypes["deleteJob"]>) {
   yield* call(deleteJobApi, action.payload);
   yield* put(jobActions.removeJob(action.payload));
@@ -66,6 +75,15 @@ export function* deleteJobSaga() {
   yield* takeEvery(jobActions.deleteJob, deleteJob);
 }
 
+export function* createJobSaga() {
+  yield* takeEvery(jobActions.createJob, createJob);
+}
+
 export function* jobsRootSaga() {
-  yield all([fetchJobsSaga(), updateJobStageSaga(), deleteJobSaga()]);
+  yield all([
+    fetchJobsSaga(),
+    updateJobStageSaga(),
+    deleteJobSaga(),
+    createJobSaga(),
+  ]);
 }

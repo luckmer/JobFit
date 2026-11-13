@@ -12,8 +12,9 @@ export type Job = {
   salary?: string | null;
   posted?: string | null;
   location: string;
-  first_seen?: string | null;
-  last_updated?: string | null;
+  first_seen?: string | null; // "YYYY-MM-DD"
+  last_updated?: string; // "YYYY-MM-DD"
+  follow_up_date?: string; // "YYYY-MM-DD"
   fit?: string | null;
   notes?: string | null;
   outcome?: string | null;
@@ -29,11 +30,15 @@ export type CreateJobInput = {
   company: string;
   url: string;
   location: string;
-  status: string;
-  stage: string;
-  first_seen: string; // "YYYY-MM-DD"
-  last_updated: string; // "YYYY-MM-DD"
-  event_date: string; // "YYYY-MM-DD"
+
+  salary?: string;
+  stage?: string;
+  notes?: string;
+  status?: string;
+  first_seen?: string; // "YYYY-MM-DD"
+  last_updated?: string; // "YYYY-MM-DD"
+  event_date?: string; // "YYYY-MM-DD"
+  follow_up_date?: string; // "YYYY-MM-DD"
 };
 
 export type JobsResponse = {

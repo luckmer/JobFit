@@ -1,6 +1,7 @@
 import type { Job, JobPatch } from "@interfaces/job/types";
 import type { ColumnId } from "@interfaces/overview/types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { NewApplicationFormValues } from "@schemas/newApplicationSchema";
 import type { PayloadType } from "@store/helper";
 
 export const jobStore = "jobStore";
@@ -44,6 +45,10 @@ export const store = createSlice({
       state.isLoadingJobs = false;
       return state;
     },
+    setJob(state, job: PayloadAction<Job>) {
+      state.jobs.push(job.payload);
+      return state;
+    },
 
     updateJob(state, action: PayloadAction<Job>) {
       const index = state.jobs.findIndex((job) => job.id === action.payload.id);
@@ -70,6 +75,10 @@ export const store = createSlice({
         state.jobs[index].stage = action.payload.column;
       }
 
+      return state;
+    },
+
+    createJob(state, _: PayloadAction<NewApplicationFormValues>) {
       return state;
     },
 

@@ -26,6 +26,7 @@
       "@interfaces/*": ["./interfaces/*"],
       "@api/*": ["./api/*"],
       "@libs/*": ["./libs/*"],
+      "@schemas/*": ["./schemas/*"],
       "@common/*": ["./common/*"],
       "@hooks/*": ["./hooks/*"],
       "@styles/*": ["./styles/*"],

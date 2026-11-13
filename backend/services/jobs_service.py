@@ -49,6 +49,10 @@ class JobsService:
 
     def create_job(self, job: CreateJobSchema) -> JobSchema:
         id = self.jobs_repository.create_user_recent_job(job)
+
+        if id is not None:
+            self.jobs_repository.add_user_job_event(id, job.stage, job.event_date, None)
+
         return self.jobs_repository.get_job_by_id(id)
 
     def patch_job(self, id: int, payload: JobPatch) -> JobSchema:

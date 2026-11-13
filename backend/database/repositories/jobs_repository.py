@@ -26,20 +26,26 @@ class JobsRepository:
         return [JobSchema(**row) for row in rows]
 
     def create_user_recent_job(self, job: CreateJobSchema) -> int | None:
+
         lastrowid = self.db.execute(
             insert_job_offer,
             (
                 job.key,
                 job.title,
                 job.company,
-                str(job.url),
+                job.url,
                 job.location,
                 job.stage,
-                job.first_seen.isoformat(),
-                job.last_updated.isoformat(),
+                job.notes,
+                job.salary,
+                job.job_description,
+                job.employment_type,
+                job.applied_date,
+                job.follow_up_date,
+                job.last_updated,
+                job.first_seen,
             ),
         )
-        self.db.execute(insert_job_event, (lastrowid, job.stage, job.event_date, None))
 
         return lastrowid
 

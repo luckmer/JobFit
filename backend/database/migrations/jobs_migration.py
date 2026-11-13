@@ -18,23 +18,22 @@ CREATE TABLE IF NOT EXISTS jobs (
   key                  TEXT NOT NULL UNIQUE,
   title                TEXT NOT NULL,
   company              TEXT NOT NULL,
-  url                  TEXT NOT NULL,
-  portal               TEXT,
-  work_mode            TEXT,
+  url                  TEXT,
   salary               TEXT,
-  posted               TEXT,
-  location             TEXT NOT NULL,
+  employment_type      TEXT,
+  location             TEXT,
   stage               TEXT NOT NULL DEFAULT 'new'
                          CHECK (stage IN ({status_list})),
   first_seen           TEXT,
   last_updated         TEXT,
-  fit                  TEXT,
   notes                TEXT,
+  job_description      TEXT,
+  applied_date         TEXT,
   outcome              TEXT,
   duplicate_of         INTEGER REFERENCES jobs(id),
   excluded_reason      TEXT,
-  posting_file         TEXT,
-  application_dir      TEXT
+  application_dir      TEXT,
+  follow_up_date       TEXT
 );
 """
 

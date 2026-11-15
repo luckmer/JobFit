@@ -6,23 +6,8 @@ import { FloatingToolbar } from "@components/FloatingToolbar";
 import type { FLOATING_TOOLBAR_KEYS } from "@interfaces/constants/enums";
 import type { Job } from "@interfaces/job/types";
 import type { ColumnId } from "@interfaces/overview/types";
+import { COLUMNS } from "@static/constants";
 import { type DragEvent, type FC, useState } from "react";
-
-const COLUMNS = [
-  { fallback: "Nothing saved for later", id: "new", title: "New" },
-  { fallback: "No applications sent", id: "ranked", title: "Ranked" },
-  { fallback: "No recruiter call booked", id: "applied", title: "Applied" },
-  { fallback: "No interview booked", id: "screening", title: "Screening" },
-  {
-    fallback: "No technical stage booked",
-    id: "techInterview",
-    title: "Tech Interview",
-  },
-  { fallback: "No finall round", id: "finalRound", title: "Final Round" },
-  { fallback: "No offers yet", id: "offer", title: "Offer" },
-  { fallback: "Nothing rejected", id: "rejected", title: "Rejected" },
-  { fallback: "nothing passed over", id: "skipped", title: "Skipped" },
-] as const;
 
 export interface IProps {
   onClickToolbarAction: (key: FLOATING_TOOLBAR_KEYS) => void;
@@ -90,7 +75,6 @@ export const Overview: FC<IProps> = ({
         <div className="flex flex-1 overflow-x-auto">
           {COLUMNS.map((col) => {
             const columnJobs = jobs.filter((j) => j.stage === col.id);
-
             return (
               <div
                 key={col.id}

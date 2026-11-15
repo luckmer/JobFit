@@ -13,6 +13,14 @@ export class ApiService extends ApiServiceCore {
     return super._post(path, body, headers);
   }
 
+  postFile<T>(
+    path: string,
+    body: FormData,
+    headers?: Record<string, string>,
+  ): Promise<T> {
+    return super._postFile(path, body, headers);
+  }
+
   put<T>(
     path: string,
     body?: unknown,

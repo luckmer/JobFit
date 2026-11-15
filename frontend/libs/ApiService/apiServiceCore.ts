@@ -9,11 +9,16 @@ export class ApiServiceCore {
     path: string,
     body?: unknown,
     headers?: Record<string, string>,
+    isFile?: boolean,
   ): Promise<T> {
     const response = await fetch(`http://${this.endpoint}/${path}`, {
       method,
-      headers: { ...this.headers, ...headers },
-      body: body ? JSON.stringify(body) : undefined,
+      headers: isFile ? headers : { ...this.headers, ...headers },
+      body: body
+        ? isFile
+          ? (body as FormData)
+          : JSON.stringify(body)
+        : undefined,
       credentials: "include",
       mode: "cors",
     });
@@ -37,6 +42,14 @@ export class ApiServiceCore {
     headers?: Record<string, string>,
   ): Promise<T> {
     return this.request<T>("POST", path, body, headers);
+  }
+
+  _postFile<T>(
+    path: string,
+    body: FormData,
+    headers?: Record<string, string>,
+  ): Promise<T> {
+    return this.request<T>("POST", path, body, headers, true);
   }
 
   _put<T>(

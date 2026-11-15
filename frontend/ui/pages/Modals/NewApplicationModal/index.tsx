@@ -11,7 +11,7 @@ import {
   type NewApplicationFormValues,
   newApplicationSchema,
 } from "@schemas/newApplicationSchema";
-import { COLUMN_IDS } from "@static/constatns";
+import { COLUMN_IDS } from "@static/constants";
 import { cn } from "cn";
 import { X } from "lucide-react";
 import type { FC } from "react";

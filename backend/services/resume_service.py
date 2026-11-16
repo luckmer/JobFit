@@ -1,17 +1,28 @@
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, UploadFile
+from pypdf import PdfReader
 
-from database.repositories import ResumeRepository, get_resume_repository
+from database.repositories import (
+    LLMRepository,
+    ResumeRepository,
+    get_llm_repository,
+    get_resume_repository,
+)
+from llm import CV_RATE_PROMPT, CV_SKILLS_PROMPT, Opencode, get_opencode
+from schemas import ResumeRatingResponse, ResumesResponse
 from utils.constants import MAX_FILE_SIZE_BYTES
 from utils.cursor import CursorPagination
-from llm import Opencode, get_opencode, CV_SKILLS_PROMPT
-from pypdf import PdfReader
-from schemas import ResumesResponse
 
 
 class ResumeService:
-    def __init__(self, resume_repository: ResumeRepository, opencode: Opencode) -> None:
+    def __init__(
+        self,
+        llm_repository: LLMRepository,
+        resume_repository: ResumeRepository,
+        opencode: Opencode,
+    ) -> None:
+        self.llm_repository = llm_repository
         self.resume_repository = resume_repository
         self.opencode = opencode
 
@@ -21,9 +32,7 @@ class ResumeService:
         return text
 
     async def extract_skills(self, text: str) -> str:
-
         prompt = CV_SKILLS_PROMPT.replace("{cv_text}", text)
-
         skills = await self.opencode.prompt(prompt)
         return skills
 
@@ -53,12 +62,35 @@ class ResumeService:
 
         return self.resume_repository.save_resume(file, skills, text)
 
+    async def rate_resume(self, filename: str, url: str) -> ResumeRatingResponse:
+
+        cache_id = self.llm_repository.build_cache_key(
+            filename + url + self.opencode.model
+        )
+
+        cache = self.llm_repository.get_cache(cache_id)
+
+        if cache is not None:
+            return ResumeRatingResponse(rating=cache.message)
+
+        resume = self.resume_repository.get_resume_by_filename(filename)
+
+        if resume is None:
+            raise HTTPException(status_code=404, detail="Resume not found")
+
+        prompt = CV_RATE_PROMPT.replace("{cv_text}", resume.data).replace(
+            "{job_url}", url
+        )
+
+        rating = await self.opencode.prompt(prompt)
+        self.llm_repository.save_cache(cache_id, rating)
+        return ResumeRatingResponse(rating=rating)
+
     async def get_resumes(
         self,
         cursor: str | None = None,
         limit: int = 10,
     ):
-
         offset = 0
         position = None
 
@@ -87,7 +119,8 @@ class ResumeService:
 
 
 def get_resume_service(
+    llm_repository: Annotated[LLMRepository, Depends(get_llm_repository)],
     resume_repository: Annotated[ResumeRepository, Depends(get_resume_repository)],
     opencode: Annotated[Opencode, Depends(get_opencode)],
 ) -> ResumeService:
-    return ResumeService(resume_repository, opencode)
+    return ResumeService(llm_repository, resume_repository, opencode)

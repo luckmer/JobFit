@@ -8,7 +8,8 @@ from .jobs_query import (
     insert_job_event,
     insert_job_offer,
 )
-from .resume_query import insert_resume, select_resume_by_filename, get_resumes
+from .llm_query import get_llm_cache_id, insert_llm_cache_id
+from .resume_query import get_resumes, insert_resume, select_resume_by_filename
 
 __all__ = [
     "get_resumes",
@@ -22,4 +23,6 @@ __all__ = [
     "delete_job_rankings_by_job_id",
     "clear_duplicate_refs",
     "delete_job_by_id",
+    "get_llm_cache_id",
+    "insert_llm_cache_id",
 ]

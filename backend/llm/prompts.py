@@ -28,27 +28,19 @@ CV:
 """
 
 CV_RATE_PROMPT = """
-Fetch the job posting from the link below and compare it with my CV. Then rate how well I fit the role.
-
-Job posting URL: {job_url}
-
 My CV:
 {cv_text}
 
+Job posting link:
+{job_url}
+
 Instructions:
-- Actually open the link and read the posting. If you can't access it, say so and stop. Don't guess what the posting says.
+- Actually open the link and read the posting. If you can't access it, reply only with "Can't access the posting" and stop. Don't guess what the posting says.
 - Base the rating only on the posting and my CV. Don't assume skills I haven't listed.
 - Compare: required tech stack, nice-to-haves, seniority and years of experience, domain experience, languages, location / work mode, and anything that looks like a dealbreaker.
-- Rate on a 1-10 scale (one decimal). Be realistic, like a recruiter who has read both documents carefully: not harsh, not generous.
+- Rate how well my CV fits the posting on a 0-10 scale (one decimal). Be realistic, like a recruiter who has read both documents carefully: not harsh, not generous.
 
 Output format:
-
-Rating: X / 10 — one-line verdict (e.g. "strong fit, apply" / "possible, but with gaps" / "weak fit, skip")
-
-Matches: 3-5 short points, each tied to something concrete from the posting and my CV
-Gaps: 3-5 short points, same rule
-Dealbreakers: anything that could get me rejected outright, or "none"
-What to change in the CV before applying: 2-3 concrete tweaks (what to move up, what to add or cut)
-
-Answer in the same language as my CV. Keep it direct and concrete, no filler.
+Reply with the rating only, in exactly this form: X / 10
+No verdict, no explanation, no lists, no extra text before or after.
 """

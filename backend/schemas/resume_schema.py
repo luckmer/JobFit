@@ -13,3 +13,7 @@ class ResumeSchema(BaseModel):
 class ResumesResponse(BaseModel):
     resumes: list[ResumeSchema]
     next_cursor: str | None = None
+
+
+class ResumeRatingResponse(BaseModel):
+    rating: str

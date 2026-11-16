@@ -23,8 +23,9 @@ class ResumeRepository:
             ),
         )
 
-    def get_resume_by_filename(self, filename: str):
-        return self.db.fetch_one(select_resume_by_filename, (filename,))
+    def get_resume_by_filename(self, filename: str) -> ResumeSchema | None:
+        rows = self.db.fetch_one(select_resume_by_filename, (filename,))
+        return ResumeSchema(**rows) if rows else None
 
     def get_resumes(self, offset: int = 0, limit: int = 10) -> list[ResumeSchema]:
         rows = self.db.fetch_all(get_resumes, (limit, offset))

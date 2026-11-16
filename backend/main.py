@@ -4,14 +4,19 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import db
+from llm import opencode
 from routes import health_router, jobs_router, resume_router
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     db.connect()
-    yield
-    db.close()
+    opencode.start()
+    try:
+        yield
+    finally:
+        db.close()
+        opencode.close()
 
 
 app = FastAPI(lifespan=lifespan)

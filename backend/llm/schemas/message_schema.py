@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict
 
 
 class MessageTime(BaseModel):
@@ -13,9 +15,27 @@ class ModelInfo(BaseModel):
     variant: str
 
 
+class ToolState(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    status: str
+    input: Any = None
+    output: Any = None
+
+
+class PartTime(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    created: int | None = None
+    completed: int | None = None
+
+
 class Content(BaseModel):
+    model_config = ConfigDict(extra="allow")
     type: str
-    text: str
+    text: str | None = None
+    id: str | None = None
+    name: str | None = None
+    state: ToolState | None = None
+    time: PartTime | None = None
 
 
 class Snapshot(BaseModel):
@@ -58,5 +78,6 @@ class Cursor(BaseModel):
 
 
 class MessageResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
     data: list[MessageData]
     cursor: Cursor

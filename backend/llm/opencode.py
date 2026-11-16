@@ -14,12 +14,6 @@ class Opencode:
         self._server: LLMServer | None = None
         self._client: LLMClient | None = None
 
-    def __enter__(self):
-        self.start()
-
-    def __exit__(self, *args: Any):
-        self.close()
-
     def start(self) -> None:
         if self._client is not None:
             return
@@ -36,7 +30,9 @@ class Opencode:
         self._client = get_llm_client(url, auth)
 
     def close(self) -> None:
-        pass
+        if self._server is not None:
+            self._server.stop()
+            self._server = self._client = None
 
     def resolve_model(self, model: str) -> dict[str, str]:
         provider, id = model.split("/", 1)
@@ -66,5 +62,8 @@ class Opencode:
         return await self._client.wait_for_reply(session_ID, prompt)
 
 
+opencode = Opencode()
+
+
 def get_opencode() -> Opencode:
-    return Opencode()
+    return opencode

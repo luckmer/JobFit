@@ -5,13 +5,29 @@ from fastapi import Depends, HTTPException, UploadFile
 from database.repositories import ResumeRepository, get_resume_repository
 from utils.constants import MAX_FILE_SIZE_BYTES
 from utils.cursor import CursorPagination
+from llm import Opencode, get_opencode, CV_SKILLS_PROMPT
+from pypdf import PdfReader
+from schemas import ResumesResponse
 
 
 class ResumeService:
-    def __init__(self, resume_repository: ResumeRepository) -> None:
+    def __init__(self, resume_repository: ResumeRepository, opencode: Opencode) -> None:
         self.resume_repository = resume_repository
+        self.opencode = opencode
 
-    def save_resume(self, file: UploadFile) -> int | None:
+    def extract_text(self, file: UploadFile) -> str:
+        pdf = PdfReader(file.file)
+        text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+        return text
+
+    async def extract_skills(self, text: str) -> str:
+
+        prompt = CV_SKILLS_PROMPT.replace("{cv_text}", text)
+
+        skills = await self.opencode.prompt(prompt)
+        return skills
+
+    async def save_resume(self, file: UploadFile) -> int | None:
         if file.content_type != "application/pdf":
             raise HTTPException(status_code=400, detail="Invalid file type")
 
@@ -32,7 +48,10 @@ class ResumeService:
         if self.resume_repository.get_resume_by_filename(file.filename) is not None:
             raise HTTPException(status_code=409, detail="Resume already exists")
 
-        return self.resume_repository.save_resume(file)
+        text = self.extract_text(file)
+        skills = await self.extract_skills(text)
+
+        return self.resume_repository.save_resume(file, skills, text)
 
     async def get_resumes(
         self,
@@ -61,27 +80,14 @@ class ResumeService:
                 position=resumes[-1].id,
             )
 
-        content: list[list[str]] = []
-
-
-#         for resume in resumes:
-#             data = resume.data
-#             stream = BytesIO(data) if isinstance(data, (bytes, bytearray)) else data
-#             pdf = PdfReader(stream)
-#
-#             if pdf.is_encrypted:
-#                 if pdf.decrypt("") == 0:
-#                     content.append([])
-#                     continue
-#
-#             text = "\n".join(page.extract_text() or "" for page in pdf.pages)
-
-# content.append(skills)
-
-# integrate opencode cli to extract skills from resume
+        return ResumesResponse(
+            resumes=resumes,
+            next_cursor=next_cursor,
+        )
 
 
 def get_resume_service(
     resume_repository: Annotated[ResumeRepository, Depends(get_resume_repository)],
+    opencode: Annotated[Opencode, Depends(get_opencode)],
 ) -> ResumeService:
-    return ResumeService(resume_repository)
+    return ResumeService(resume_repository, opencode)

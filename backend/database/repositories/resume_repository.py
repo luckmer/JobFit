@@ -11,8 +11,7 @@ class ResumeRepository:
     def __init__(self, db: Database) -> None:
         self.db = db
 
-    def save_resume(self, file: UploadFile) -> int | None:
-        data = file.file.read()
+    def save_resume(self, file: UploadFile, skills: str, data: str) -> int | None:
 
         return self.db.execute(
             insert_resume,
@@ -20,6 +19,7 @@ class ResumeRepository:
                 file.filename,
                 file.content_type or "application/pdf",
                 data,
+                skills,
             ),
         )
 
@@ -28,6 +28,7 @@ class ResumeRepository:
 
     def get_resumes(self, offset: int = 0, limit: int = 10) -> list[ResumeSchema]:
         rows = self.db.fetch_all(get_resumes, (limit, offset))
+
         return [ResumeSchema(**row) for row in rows]
 
 

@@ -7,7 +7,7 @@ export interface IProps {
   title: string;
   location?: string;
   company: string;
-  link: string;
+  link?: string;
   salary?: string;
   rank?: string;
   id: string;
@@ -28,16 +28,18 @@ export const Card: FC<IProps> = ({
         <div className="min-w-0 flex-1 text-[14px] font-semibold leading-snug">
           <Typography text="body">{title}</Typography>
         </div>
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Open job posting"
-          className="mt-0.5 shrink-0 text-faint hover:text-foreground"
-          onPointerDown={(e) => e.stopPropagation()}
-        >
-          <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-        </a>
+        {link?.trim() && (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open job posting"
+            className="mt-0.5 shrink-0 text-faint hover:text-foreground"
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+          </a>
+        )}
       </div>
       <div className="mt-1 truncate text-xs text-muted-foreground py-1">
         <Typography text="small" color="mutedForeground">

@@ -22,8 +22,8 @@ applications_table = """
 CREATE TABLE IF NOT EXISTS applications (
   id               INTEGER PRIMARY KEY AUTOINCREMENT,
   job_id           INTEGER NOT NULL UNIQUE REFERENCES jobs(id) ON DELETE CASCADE,
-  resume_id        INTEGER,
-  applied_date     TEXT NOT NULL,
+  resume_id        INTEGER ,
+  applied_date     TEXT,
   outcome          TEXT,
   follow_up_date   TEXT
 );

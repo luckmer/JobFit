@@ -49,7 +49,6 @@ class JobsService:
         )
 
     def create_job(self, job: CreateJobSchema):
-
         if job.stage not in STATUSES:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -63,16 +62,21 @@ class JobsService:
                 detail="Failed to create job",
             )
 
-        self.jobs_repository.create_user_recent_application(job, job_id)
-        self.jobs_repository.add_user_job_event(job_id, job.stage, job.event_date, None)
-
-        created_job = self.jobs_repository.get_job_by_id(job_id)
-
-        if created_job is None:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Job was created but could not be retrieved",
+        try:
+            self.jobs_repository.create_user_recent_application(job, job_id)
+            self.jobs_repository.add_user_job_event(
+                job_id, job.stage, job.event_date, None
             )
+
+            created_job = self.jobs_repository.get_job_by_id(job_id)
+            if created_job is None:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Job was created but could not be retrieved",
+                )
+        except Exception:
+            self.jobs_repository.delete_user_recent_job(job_id)
+            raise
 
         return created_job
 

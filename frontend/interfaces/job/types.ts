@@ -6,7 +6,7 @@ export type Job = {
   stage: ColumnId;
   title: string;
   company: string;
-  url: string;
+  url?: string;
   salary?: string;
   employment_type?: string;
   location?: string;

@@ -15,6 +15,7 @@ export type IOpenStageModal = {
 export type IUiState = {
   openStageModal: IOpenStageModal;
   openNewApplicationModal: boolean;
+  openResumeModal: boolean;
 };
 
 export const defaultState: IUiState = {
@@ -26,6 +27,7 @@ export const defaultState: IUiState = {
     prevStage: "new",
   },
   openNewApplicationModal: false,
+  openResumeModal: false,
 };
 
 export const store = createSlice({
@@ -38,6 +40,10 @@ export const store = createSlice({
     },
     setOpenNewApplicationModal(state, action: PayloadAction<boolean>) {
       state.openNewApplicationModal = action.payload;
+    },
+
+    setOpenResumeModal(state, action: PayloadAction<boolean>) {
+      state.openResumeModal = action.payload;
     },
   },
 });

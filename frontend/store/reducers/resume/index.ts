@@ -37,6 +37,26 @@ export const store = createSlice({
       state.isLoadingResumes = action.payload.isLoadingResumes;
       return state;
     },
+    createResume(state, _: PayloadAction<FormData>) {
+      return state;
+    },
+    setResume(state, resume: PayloadAction<Resume>) {
+      state.resumes.push(resume.payload);
+      return state;
+    },
+
+    removeDefaultResume(state, action: PayloadAction<string>) {
+      state.resumes = state.resumes.filter(
+        (resume) => resume.default_id !== action.payload,
+      );
+      return state;
+    },
+    removeResume(state, action: PayloadAction<number>) {
+      state.resumes = state.resumes.filter(
+        (resume) => resume.id !== action.payload,
+      );
+      return state;
+    },
   },
 });
 

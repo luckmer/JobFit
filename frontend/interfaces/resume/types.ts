@@ -7,6 +7,8 @@ export type Resume = {
   title: string;
   category: string;
   updated_at: string;
+  is_default?: boolean;
+  default_id?: string;
 };
 
 export type ResumeResponse = {

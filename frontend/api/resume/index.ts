@@ -1,6 +1,6 @@
 "use client";
 
-import type { ResumeResponse } from "@interfaces/resume/types";
+import type { Resume, ResumeResponse } from "@interfaces/resume/types";
 import { getApi } from "@libs/ApiService";
 import { ENDPOINTS } from "@static/endpoints";
 
@@ -14,13 +14,11 @@ export const getResumesApi = async (): Promise<ResumeResponse | undefined> => {
   }
 };
 
-export const createResume = async (data: FormData) => {
+export const createResumeApi = async (data: FormData): Promise<Resume> => {
   const api = getApi();
 
-  data.append("title", "Frontend Developer");
-  data.append("category", "Frontend");
   try {
-    await api.postFile(ENDPOINTS.RESUME_CREATE, data);
+    return await api.postFile<Resume>(ENDPOINTS.RESUME_CREATE, data);
   } catch (err) {
     console.error(err);
     throw err;

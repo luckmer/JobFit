@@ -3,12 +3,30 @@ export const COLUMN_IDS = [
   "ranked",
   "applied",
   "screening",
-  "techInterview",
-  "finalRound",
+  "tech interview",
+  "final round",
   "offer",
   "rejected",
   "skipped",
 ] as const;
+
+export type ColumnId = (typeof COLUMN_IDS)[number];
+
+export const COLUMN_ID_TO_TITLE: Record<string, ColumnId> = {
+  new: "new",
+  ranked: "ranked",
+  applied: "applied",
+  screening: "screening",
+  techInterview: "tech interview",
+  finalRound: "final round",
+  offer: "offer",
+  rejected: "rejected",
+  skipped: "skipped",
+};
+
+export const TITLE_TO_COLUMN_ID = Object.fromEntries(
+  Object.entries(COLUMN_ID_TO_TITLE).map(([id, title]) => [title, id]),
+) as Record<string, ColumnId>;
 
 export const COLUMNS = [
   { fallback: "Nothing saved for later", id: "new", title: "New" },

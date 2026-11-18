@@ -26,6 +26,7 @@ export const createJobApi = async (job: NewApplicationFormValues) => {
     company: job.company,
     url: job.postingUrl,
     stage: job.stage,
+    resume_id: job.resumeID,
     notes: job.notes,
     location: job.location,
     salary: job.salaryRange,

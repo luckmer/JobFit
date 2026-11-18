@@ -10,7 +10,7 @@ class JobSchema(BaseModel):
     stage: str
     title: str
     company: str
-    url: str
+    url: str | None = None
     salary: str | None = None
     employment_type: str | None = None
     location: str | None = None
@@ -23,7 +23,7 @@ class JobSchema(BaseModel):
     applied_date: str | None = None
     outcome: str | None = None
     follow_up_date: date | None = None
-    resume_id: int
+    resume_id: int | None = None
 
 
 class CreateJobSchema(BaseModel):
@@ -31,7 +31,7 @@ class CreateJobSchema(BaseModel):
     title: str
     company: str
     stage: str
-    resume_id: int
+    resume_id: int | None = None
     url: str | None = None
     location: str | None = None
     notes: str | None = None
@@ -40,8 +40,8 @@ class CreateJobSchema(BaseModel):
     employment_type: str | None = None
     applied_date: date | None = None
     follow_up_date: date | None = None
-    last_updated: date | None = None
-    first_seen: date | None = None
+    last_updated: date
+    first_seen: date
     event_date: date
 
 

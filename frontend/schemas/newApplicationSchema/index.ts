@@ -11,6 +11,7 @@ export const newApplicationSchema = z.object({
   employmentType: z.string().optional(),
   applicationDate: z.string().optional(),
   followUpDate: z.string().optional(),
+  resumeID: z.string().optional(),
   stage: z.custom<ColumnId>(),
   notes: z.string().optional(),
 });

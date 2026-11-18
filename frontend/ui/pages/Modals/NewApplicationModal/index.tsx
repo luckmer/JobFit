@@ -13,7 +13,11 @@ import {
   type NewApplicationFormValues,
   newApplicationSchema,
 } from "@schemas/newApplicationSchema";
-import { COLUMN_IDS } from "@static/constants";
+import {
+  COLUMN_ID_TO_TITLE,
+  COLUMN_IDS,
+  TITLE_TO_COLUMN_ID,
+} from "@static/constants";
 import { cn } from "cn";
 import { X } from "lucide-react";
 import type { FC } from "react";
@@ -83,7 +87,7 @@ export const NewApplicationModal: FC<IProps> = ({
           className="flex min-h-0 flex-1 flex-col overflow-hidden"
         >
           <section className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2 ">
               <div className="space-y-1">
                 <Typography text="tiny" uppercase color="mutedForeground">
                   company *
@@ -264,8 +268,10 @@ export const NewApplicationModal: FC<IProps> = ({
                       <Dropdown
                         placeholder="Select stage"
                         data={COLUMN_IDS}
-                        activeElement={field.value ?? ""}
-                        onSelect={field.onChange}
+                        activeElement={COLUMN_ID_TO_TITLE[field.value] ?? ""}
+                        onSelect={(option) => {
+                          field.onChange(TITLE_TO_COLUMN_ID[option]);
+                        }}
                       />
                     )}
                   />
@@ -304,16 +310,32 @@ export const NewApplicationModal: FC<IProps> = ({
                 <Typography text="small">Analyze & suggest resume</Typography>
               </Button>
             </div>
-            {resumes.map((resume) => (
-              <CVSelectCard
-                key={resume.id}
-                category={resume.category}
-                filename={resume.filename}
-                skills={JSON.parse(resume.skills)}
-                onClick={() => {}}
-                title={resume.title}
-              />
-            ))}
+            <Controller
+              control={control}
+              name="resumeID"
+              render={({ field }) => (
+                <div className="space-y-2">
+                  {resumes.map((resume) => {
+                    const id = String(resume.id);
+                    const isSelected = field.value === id;
+                    return (
+                      <CVSelectCard
+                        key={resume.id}
+                        category={resume.category}
+                        filename={resume.filename}
+                        isDefault={resume.is_default ?? false}
+                        skills={JSON.parse(resume.skills)}
+                        title={resume.title}
+                        isSelected={isSelected}
+                        onClick={() =>
+                          field.onChange(isSelected ? undefined : id)
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            />
           </section>
           <section className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-border bg-card px-6 py-4">
             <div className="ml-auto flex items-center gap-2">

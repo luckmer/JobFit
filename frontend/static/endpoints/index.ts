@@ -5,6 +5,6 @@ export const ENDPOINTS = {
   [JOBS_ENDPOINT.DELETE]: "v1/jobs",
   [JOBS_ENDPOINT.PATCH]: "v1/jobs",
   [JOBS_ENDPOINT.CREATE]: "v1/jobs",
-
+  [RESUME_ENDPOINT.RESUME_RESUME]: "v1/resume",
   [RESUME_ENDPOINT.RESUME_CREATE]: "v1/resume",
 };

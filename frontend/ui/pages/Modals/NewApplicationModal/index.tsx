@@ -1,5 +1,6 @@
 import { Button } from "@components/Buttons/Button";
 import CalendarPicker from "@components/CalendarPicker";
+import CVSelectCard from "@components/CVSelectCard";
 import { Dialog } from "@components/Dialog/Dialog";
 import { DialogContent } from "@components/Dialog/DialogContent";
 import { DialogHeader } from "@components/Dialog/DialogHeader";
@@ -7,6 +8,7 @@ import { Dropdown } from "@components/Dropdown";
 import { Input } from "@components/Input";
 import { Typography } from "@components/Typography";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { Resume } from "@interfaces/resume/types";
 import {
   type NewApplicationFormValues,
   newApplicationSchema,
@@ -19,6 +21,7 @@ import { Controller, useForm } from "react-hook-form";
 
 export type IProps = {
   open: boolean;
+  resumes: Resume[];
   onOpenChange: (status: boolean) => void;
   onSubmit: (values: NewApplicationFormValues) => void;
 };
@@ -26,6 +29,7 @@ export type IProps = {
 export const NewApplicationModal: FC<IProps> = ({
   onOpenChange,
   open,
+  resumes,
   onSubmit,
 }) => {
   const {
@@ -287,17 +291,29 @@ export const NewApplicationModal: FC<IProps> = ({
                 )}
               />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 w-full">
               <div className="flex flex-row items-center gap-2">
                 <Typography text="small" uppercase color="faint">
                   resume
                 </Typography>
-                <Typography color="mutedForeground">· 0 available</Typography>
+                <Typography color="mutedForeground">
+                  · {resumes.length} available
+                </Typography>
               </div>
               <Button variant="outline" disabled type="button">
                 <Typography text="small">Analyze & suggest resume</Typography>
               </Button>
             </div>
+            {resumes.map((resume) => (
+              <CVSelectCard
+                key={resume.id}
+                category={resume.category}
+                filename={resume.filename}
+                skills={JSON.parse(resume.skills)}
+                onClick={() => {}}
+                title={resume.title}
+              />
+            ))}
           </section>
           <section className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-border bg-card px-6 py-4">
             <div className="ml-auto flex items-center gap-2">

@@ -7,38 +7,19 @@ export type Job = {
   title: string;
   company: string;
   url: string;
-  portal?: string | null;
-  work_mode?: string | null;
-  salary?: string | null;
-  posted?: string | null;
-  location: string;
-  first_seen?: string | null; // "YYYY-MM-DD"
-  last_updated?: string; // "YYYY-MM-DD"
-  follow_up_date?: string; // "YYYY-MM-DD"
-  fit?: string | null;
-  notes?: string | null;
-  outcome?: string | null;
-  duplicate_of?: number | null;
-  excluded_reason?: string | null;
-  posting_file?: string | null;
-  application_dir?: string | null;
-};
-
-export type CreateJobInput = {
-  key: string;
-  title: string;
-  company: string;
-  url: string;
-  location: string;
-
   salary?: string;
-  stage?: string;
+  employment_type?: string;
+  location?: string;
+  job_description?: string;
   notes?: string;
-  status?: string;
+  duplicate_of?: number;
+  reason?: string;
   first_seen?: string; // "YYYY-MM-DD"
   last_updated?: string; // "YYYY-MM-DD"
-  event_date?: string; // "YYYY-MM-DD"
+  applied_date?: string; // "YYYY-MM-DD"
+  outcome?: string;
   follow_up_date?: string; // "YYYY-MM-DD"
+  resume_id?: string;
 };
 
 export type JobsResponse = {
@@ -46,23 +27,31 @@ export type JobsResponse = {
   next_cursor: string | null;
 };
 
-export interface JobPatch {
-  stage: string;
-  event_date: string; // "YYYY-MM-DD"
-  notes?: string;
+export type JobPatchPayload = {
+  last_updated: string;
+  event_date: string;
+  stage: ColumnId;
   title?: string;
   company?: string;
   url?: string;
-  portal?: string;
-  work_mode?: string;
   salary?: string;
-  posted?: string;
-  status?: string;
-  fit?: string;
+  employment_type?: string;
   location?: string;
-  outcome?: string;
+  job_description?: string;
+  notes?: string;
   duplicate_of?: number;
-  excluded_reason?: string;
-  posting_file?: string;
-  application_dir?: string;
+  reason?: string;
+  first_seen?: string;
+};
+
+export type ApplicationsPatchPayload = {
+  resume_id?: string;
+  applied_date?: string;
+  follow_up_date?: string;
+  outcome?: string;
+};
+
+export interface JobPatch {
+  job_payload?: JobPatchPayload;
+  applications_payload?: ApplicationsPatchPayload;
 }

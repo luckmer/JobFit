@@ -5,7 +5,7 @@ import type { FC } from "react";
 
 export interface IProps {
   title: string;
-  location: string;
+  location?: string;
   company: string;
   link: string;
   salary?: string;
@@ -41,7 +41,7 @@ export const Card: FC<IProps> = ({
       </div>
       <div className="mt-1 truncate text-xs text-muted-foreground py-1">
         <Typography text="small" color="mutedForeground">
-          {company} · {location}
+          {company} · {location || "Not specified"}
         </Typography>
       </div>
       <div className="mt-2 flex items-center gap-1.5 text-[11px]">

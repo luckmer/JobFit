@@ -1,10 +1,11 @@
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 
 from database.repositories import JobsRepository, get_jobs_repository
 from schemas import JobPatch
 from schemas.job_schema import CreateJobSchema, JobSchema, JobsResponse
+from utils.constants import STATUSES
 from utils.cursor import CursorPagination
 
 
@@ -47,20 +48,64 @@ class JobsService:
             next_cursor=next_cursor,
         )
 
-    def create_job(self, job: CreateJobSchema) -> JobSchema:
-        id = self.jobs_repository.create_user_recent_job(job)
+    def create_job(self, job: CreateJobSchema):
 
-        if id is not None:
-            self.jobs_repository.add_user_job_event(id, job.stage, job.event_date, None)
+        if job.stage not in STATUSES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid stage",
+            )
 
-        return self.jobs_repository.get_job_by_id(id)
+        job_id = self.jobs_repository.create_user_recent_job(job)
+        if job_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create job",
+            )
 
-    def patch_job(self, id: int, payload: JobPatch) -> JobSchema:
-        self.jobs_repository.patch_user_recent_job(id, payload)
-        self.jobs_repository.add_user_job_event(
-            id, payload.stage, payload.event_date, payload.notes
-        )
-        return self.jobs_repository.get_job_by_id(id)
+        self.jobs_repository.create_user_recent_application(job, job_id)
+        self.jobs_repository.add_user_job_event(job_id, job.stage, job.event_date, None)
+
+        created_job = self.jobs_repository.get_job_by_id(job_id)
+
+        if created_job is None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Job was created but could not be retrieved",
+            )
+
+        return created_job
+
+    def patch_job(self, job_id: int, payload: JobPatch) -> JobSchema:
+        job = self.jobs_repository.get_job_by_id(job_id)
+
+        if job is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Job not found",
+            )
+
+        if payload.job_payload is not None:
+            self.jobs_repository.patch_job(job_id, payload.job_payload)
+            self.jobs_repository.add_user_job_event(
+                job_id,
+                payload.job_payload.stage,
+                payload.job_payload.event_date,
+                payload.job_payload.notes,
+            )
+
+        if payload.applications_payload is not None:
+            self.jobs_repository.patch_application(job_id, payload.applications_payload)
+
+        updated_job = self.jobs_repository.get_job_by_id(job_id)
+
+        if updated_job is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Job not found",
+            )
+
+        return updated_job
 
     def delete_job(self, id: int) -> None:
         self.jobs_repository.delete_user_recent_job(id)

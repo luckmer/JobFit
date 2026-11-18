@@ -2,6 +2,7 @@ import { createJobApi, deleteJobApi, getJobsApi, patchJobApi } from "@api/jobs";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { jobActions, type PayloadTypes } from "@store/reducers/jobs";
 import { jobsSelector } from "@store/selectors/jobs";
+import { format } from "date-fns";
 import { all, call, debounce, put, select, takeEvery } from "typed-redux-saga";
 
 export function* fetchJobs() {
@@ -32,9 +33,14 @@ export function* updateJobStage(
   const job = jobs[index];
 
   try {
-    yield* call(patchJobApi, parseInt(action.payload.id, 10), {
+    const jobPayload = {
+      last_updated: format(Date.now(), "yyyy-MM-dd"),
       event_date: action.payload.date,
       stage: job.stage,
+    };
+
+    yield* call(patchJobApi, parseInt(action.payload.id, 10), {
+      job_payload: jobPayload,
     });
   } catch (err) {
     console.log("failed to patch job", err);

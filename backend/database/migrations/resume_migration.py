@@ -5,5 +5,9 @@ CREATE TABLE IF NOT EXISTS resumes (
     content_type TEXT NOT NULL,
     data TEXT NOT NULL,
     skills TEXT,
+    title TEXT,
+    category TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    
 )"""

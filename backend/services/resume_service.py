@@ -1,3 +1,4 @@
+from sqlite3 import IntegrityError
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, UploadFile
@@ -10,9 +11,8 @@ from database.repositories import (
     get_resume_repository,
 )
 from llm import CV_RATE_PROMPT, CV_SKILLS_PROMPT, Opencode, get_opencode
-from schemas import ResumeRatingResponse, ResumesResponse
-from utils.constants import MAX_FILE_SIZE_BYTES
-from utils.cursor import CursorPagination
+from schemas import ResumeRatingResponse, ResumesResponse, Resume
+from utils import MAX_FILE_SIZE_BYTES, CursorPagination, Quard, get_quard
 
 
 class ResumeService:
@@ -21,10 +21,12 @@ class ResumeService:
         llm_repository: LLMRepository,
         resume_repository: ResumeRepository,
         opencode: Opencode,
+        quard: Quard,
     ) -> None:
         self.llm_repository = llm_repository
         self.resume_repository = resume_repository
         self.opencode = opencode
+        self.quard = quard
 
     def extract_text(self, file: UploadFile) -> str:
         pdf = PdfReader(file.file)
@@ -36,12 +38,15 @@ class ResumeService:
         skills = await self.opencode.prompt(prompt)
         return skills
 
-    async def save_resume(self, file: UploadFile) -> int | None:
-        if file.content_type != "application/pdf":
-            raise HTTPException(status_code=400, detail="Invalid file type")
-
+    async def save_resume(self, file: UploadFile, title: str, category: str) -> Resume:
         if file.filename is None:
             raise HTTPException(status_code=400, detail="Invalid file name")
+
+        if self.resume_repository.get_resume_by_filename(file.filename) is not None:
+            raise HTTPException(status_code=409, detail="Resume already exists")
+
+        if file.content_type != "application/pdf":
+            raise HTTPException(status_code=400, detail="Invalid file type")
 
         if file.size is None:
             raise HTTPException(status_code=400, detail="Invalid file size")
@@ -54,16 +59,34 @@ class ResumeService:
         if header != b"%PDF-":
             raise HTTPException(status_code=400, detail="Invalid file type")
 
-        if self.resume_repository.get_resume_by_filename(file.filename) is not None:
-            raise HTTPException(status_code=409, detail="Resume already exists")
+        try:
+            text = self.extract_text(file)
+        except Exception:
+            raise HTTPException(status_code=422, detail="Could not read PDF")
 
-        text = self.extract_text(file)
+        key = self.llm_repository.build_cache_key(file.filename)
+
+        if not self.quard.add_key(key):
+            raise HTTPException(
+                status_code=409, detail="Resume is already being processed"
+            )
+
         skills = await self.extract_skills(text)
 
-        return self.resume_repository.save_resume(file, skills, text)
+        try:
+            self.resume_repository.save_resume(file, skills, text, title, category)
+            resume = self.resume_repository.get_resume_by_filename(file.filename)
+
+            if resume is None:
+                raise HTTPException(status_code=404, detail="Resume not found")
+
+            return resume
+        except IntegrityError:
+            raise HTTPException(status_code=409, detail="Resume already exists")
+        finally:
+            self.quard.remove_key(key)
 
     async def rate_resume(self, filename: str, url: str) -> ResumeRatingResponse:
-
         cache_id = self.llm_repository.build_cache_key(
             filename + url + self.opencode.model
         )
@@ -73,24 +96,32 @@ class ResumeService:
         if cache is not None:
             return ResumeRatingResponse(rating=cache.message)
 
-        resume = self.resume_repository.get_resume_by_filename(filename)
+        content = self.resume_repository.get_resume_data(filename)
 
-        if resume is None:
+        if content is None:
             raise HTTPException(status_code=404, detail="Resume not found")
 
-        prompt = CV_RATE_PROMPT.replace("{cv_text}", resume.data).replace(
-            "{job_url}", url
-        )
+        prompt = CV_RATE_PROMPT.replace("{cv_text}", content).replace("{job_url}", url)
 
-        rating = await self.opencode.prompt(prompt)
-        self.llm_repository.save_cache(cache_id, rating)
-        return ResumeRatingResponse(rating=rating)
+        if not self.quard.add_key(cache_id):
+            raise HTTPException(
+                status_code=409, detail="Rating is already being generated"
+            )
 
-    async def get_resumes(
+        try:
+            rating = await self.opencode.prompt(prompt)
+            self.llm_repository.save_cache(cache_id, rating)
+            return ResumeRatingResponse(rating=rating)
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=str(e))
+        finally:
+            self.quard.remove_key(cache_id)
+
+    def get_resumes(
         self,
         cursor: str | None = None,
         limit: int = 10,
-    ):
+    ) -> ResumesResponse:
         offset = 0
         position = None
 
@@ -122,5 +153,6 @@ def get_resume_service(
     llm_repository: Annotated[LLMRepository, Depends(get_llm_repository)],
     resume_repository: Annotated[ResumeRepository, Depends(get_resume_repository)],
     opencode: Annotated[Opencode, Depends(get_opencode)],
+    quard: Annotated[Quard, Depends(get_quard)],
 ) -> ResumeService:
-    return ResumeService(llm_repository, resume_repository, opencode)
+    return ResumeService(llm_repository, resume_repository, opencode, quard)

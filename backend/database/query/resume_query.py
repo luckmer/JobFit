@@ -1,5 +1,5 @@
 insert_resume = """
-INSERT INTO resumes (filename, content_type, data, skills) VALUES (?, ?, ?, ?)
+INSERT INTO resumes (filename, content_type, data, skills,title,category) VALUES (?, ?, ?, ?, ?, ?)
 """
 
 

@@ -10,20 +10,20 @@ class JobSchema(BaseModel):
     stage: str
     title: str
     company: str
-    url: str | None = None
-    location: str | None = None
+    url: str
     salary: str | None = None
     employment_type: str | None = None
+    location: str | None = None
+    job_description: str | None = None
+    notes: str | None = None
+    duplicate_of: int | None = None
+    reason: str | None = None
     first_seen: str | None = None
     last_updated: str | None = None
     applied_date: str | None = None
-    job_description: str | None = None
-    notes: str | None = None
     outcome: str | None = None
-    duplicate_of: int | None = None
-    excluded_reason: str | None = None
-    application_dir: str | None = None
     follow_up_date: date | None = None
+    resume_id: int
 
 
 class CreateJobSchema(BaseModel):
@@ -31,6 +31,7 @@ class CreateJobSchema(BaseModel):
     title: str
     company: str
     stage: str
+    resume_id: int
     url: str | None = None
     location: str | None = None
     notes: str | None = None
@@ -49,25 +50,31 @@ class JobsResponse(BaseModel):
     next_cursor: str | None = None
 
 
-class JobPatch(BaseModel):
+class JobPayloadSchema(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
-    stage: str
+    last_updated: str
     event_date: date
-
+    stage: str
     title: str | None = None
     company: str | None = None
     url: str | None = None
     salary: str | None = None
     employment_type: str | None = None
     location: str | None = None
-    notes: str | None = None
     job_description: str | None = None
-    applied_date: str | None = None
-    outcome: str | None = None
+    notes: str | None = None
     duplicate_of: int | None = None
-    excluded_reason: str | None = None
-    application_dir: str | None = None
-    follow_up_date: str | None = None
+    reason: str | None = None
     first_seen: str | None = None
-    last_updated: str | None = None
+
+
+class AppliocationsPayloadSchema(BaseModel):
+    resume_id: int | None = None
+    applied_date: date | None = None
+    outcome: str | None = None
+    follow_up_date: date | None = None
+
+
+class JobPatch(BaseModel):
+    job_payload: JobPayloadSchema | None = None
+    applications_payload: AppliocationsPayloadSchema | None = None

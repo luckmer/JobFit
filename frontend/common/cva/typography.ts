@@ -6,7 +6,7 @@ export const typography = cva("not-italic select-none", {
     text: {
       h1: "text-[24px] font-[400] leading-[30px] tracking-[0.48px]",
       h2: "text-[22px] font-[400] leading-[24px] tracking-[0.44px]",
-      h3: "text-[20px] font-[400] leading-[22px] tracking-[0.4px]",
+      h3: "text-[18px] font-[400] leading-[22px] tracking-[0.4px]",
       h2Medium: "text-[22px] font-[700] leading-[26px] tracking-[0.44px]",
       caption: "text-[13px] font-[4i00] leading-[16px] tracking-[0.28px]",
       captionMedium: "text-[14px] font-[700] leading-[14px] tracking-[0.28px]",
@@ -57,6 +57,9 @@ export const typography = cva("not-italic select-none", {
       sidebarBorder: "text-sidebar-border",
       sidebarRing: "text-sidebar-ring",
     },
+    truncate: {
+      true: "truncate",
+    },
     bold: {
       true: "font-bold",
     },
@@ -65,6 +68,15 @@ export const typography = cva("not-italic select-none", {
     },
     nowrap: {
       true: "whitespace-nowrap",
+    },
+    breakAll: {
+      true: "break-all",
+    },
+    right: {
+      true: "text-right",
+    },
+    left: {
+      true: "text-left",
     },
     uppercase: {
       true: "uppercase",

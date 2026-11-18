@@ -1,6 +1,13 @@
-from .job_schema import CreateJobSchema, JobPatch, JobSchema, JobsResponse
+from .job_schema import (
+    CreateJobSchema,
+    JobPatch,
+    JobSchema,
+    JobsResponse,
+    JobPayloadSchema,
+    AppliocationsPayloadSchema,
+)
 from .llm_schema import LLmCacheResponse
-from .resume_schema import ResumeRatingResponse, ResumeSchema, ResumesResponse
+from .resume_schema import ResumeRatingResponse, ResumeSchema, ResumesResponse, Resume
 
 __all__ = [
     "CreateJobSchema",
@@ -11,4 +18,7 @@ __all__ = [
     "ResumesResponse",
     "ResumeRatingResponse",
     "LLmCacheResponse",
+    "Resume",
+    "JobPayloadSchema",
+    "AppliocationsPayloadSchema",
 ]

@@ -306,9 +306,6 @@ export const NewApplicationModal: FC<IProps> = ({
                   · {resumes.length} available
                 </Typography>
               </div>
-              <Button variant="outline" disabled type="button">
-                <Typography text="small">Analyze & suggest resume</Typography>
-              </Button>
             </div>
             <Controller
               control={control}

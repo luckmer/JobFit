@@ -6,6 +6,7 @@ import makeStore, { type AppStore } from "@store/store";
 import type { FC, ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Provider, useDispatch } from "react-redux";
+import { persistStore } from "redux-persist";
 
 interface IProps {
   readonly children: ReactNode;
@@ -22,6 +23,7 @@ export const StoreProvider: FC<IProps> = ({ children }) => {
 
   useEffect(() => {
     if (storeRef.current != null) {
+      persistStore(storeRef.current);
       return setupListeners(storeRef.current.dispatch);
     }
   }, []);

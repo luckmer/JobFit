@@ -1,5 +1,6 @@
 "use client";
 import { Typography } from "@components/Typography";
+import { format, parseISO } from "date-fns";
 import { ExternalLink } from "lucide-react";
 import type { FC } from "react";
 
@@ -11,6 +12,7 @@ export interface IProps {
   salary?: string;
   rank?: string;
   id: string;
+  applied?: string;
 }
 
 export const Card: FC<IProps> = ({
@@ -21,6 +23,7 @@ export const Card: FC<IProps> = ({
   rank,
   id,
   salary,
+  applied,
 }) => {
   return (
     <div className="group cursor-grab rounded-md border border-border bg-card px-3 py-2.5 text-left transition hover:border-muted-foreground/40 active:cursor-grabbing">
@@ -60,7 +63,7 @@ export const Card: FC<IProps> = ({
         )}
         <div className="ml-auto flex">
           <Typography text="small" color="faint">
-            4d
+            {applied ? format(parseISO(applied), "yyyy-MM-dd") : ""}
           </Typography>
         </div>
       </div>

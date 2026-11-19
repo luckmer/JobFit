@@ -43,3 +43,11 @@ export const COLUMNS = [
   { fallback: "Nothing rejected", id: "rejected", title: "Rejected" },
   { fallback: "nothing passed over", id: "skipped", title: "Skipped" },
 ] as const;
+
+export const ALL_CATEGORIES = "All categories";
+export const SORT_OPTIONS = [
+  "Newest first",
+  "Oldest first",
+  "Recently updated",
+  "A–Z",
+] as const;

@@ -117,6 +117,7 @@ export const Overview: FC<IProps> = ({
                           }
                         >
                           <Card
+                            applied={job.applied_date}
                             title={job.title}
                             location={job.location}
                             link={job.url}

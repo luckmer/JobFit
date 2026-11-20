@@ -51,7 +51,7 @@ const CVSelectCard: FC<IProps> = ({
       )}
     >
       <FileText size={16} className="min-w-6 min-h-6 text-muted-foreground" />
-      <div className="flex flex-col gap-0.5 w-full">
+      <div className="flex flex-col gap-0.5 w-full overflow-hidden">
         {isDefault ? (
           <Skeleton className="h-[20px] w-full" />
         ) : (

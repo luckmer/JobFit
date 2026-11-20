@@ -8,14 +8,12 @@ import {
   ScanSearch,
   Settings,
   Sparkles,
-  SquareKanban,
 } from "lucide-react";
 import Link from "next/link";
 import type { FC } from "react";
 
 const data = [
   { href: "/", name: "Overview", icon: LayoutDashboard },
-  { href: "/applications", name: "Applications", icon: SquareKanban },
   { href: "/resumes", name: "My resumes", icon: FileText },
   { href: "/matcher", name: "AI Resume Matcher", icon: ScanSearch },
   { href: "/assistant", name: "Career Assistant", icon: Bot },
@@ -29,13 +27,13 @@ export interface IProps {
 
 export const Sidebar: FC<IProps> = ({ activeRoot }) => {
   return (
-    <aside className="sticky top-0 hidden h-screen w-56 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
+    <aside className="sticky top-0  h-screen md:w-56 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
       <section className="flex h-14 items-center gap-2 px-4">
         <div className="flex flex-row items-center gap-2">
           <div className="flex h-6 w-6 items-center justify-center rounded bg-primary">
             <Sparkles className="size-3.5 text-primary-foreground" />
           </div>
-          <Typography>JobFit</Typography>
+          <Typography class="hidden md:flex">JobFit</Typography>
         </div>
       </section>
       <nav className="flex-1 space-y-0.5 px-2 py-2">
@@ -57,7 +55,10 @@ export const Sidebar: FC<IProps> = ({ activeRoot }) => {
                   isActive ? "text-foreground" : "text-muted-foreground",
                 )}
               />
-              <Typography color={isActive ? "primary" : "mutedForeground"}>
+              <Typography
+                color={isActive ? "primary" : "mutedForeground"}
+                class="hidden md:flex"
+              >
                 {name}
               </Typography>
             </Link>

@@ -1,12 +1,8 @@
-from .message_schema import (
-    BaseModel,
-    MessageData,
-    MessageResponse,
-    MessageTime,
-    ModelInfo,
-)
-from .prompt_schema import PromptData, PromptPayload, PromptResponse, PromptTime
-from .session_schema import (
+from .opencode_schema import (
+    PromptData,
+    PromptPayload,
+    PromptResponse,
+    PromptTime,
     SessionCache,
     SessionData,
     SessionLocation,
@@ -14,6 +10,16 @@ from .session_schema import (
     SessionResponse,
     SessionTime,
     SessionTokens,
+    BaseModel,
+    MessageData,
+    MessageResponse,
+    MessageTime,
+    ModelInfo,
+    ModelsResponse,
+    ModelOut,
+    ModelCapabilitiesOut,
+    ModelLimitsOut,
+    InterruptedResponse,
 )
 
 __all__ = [
@@ -33,4 +39,9 @@ __all__ = [
     "MessageResponse",
     "MessageTime",
     "ModelInfo",
+    "ModelsResponse",
+    "ModelOut",
+    "ModelCapabilitiesOut",
+    "ModelLimitsOut",
+    "InterruptedResponse",
 ]

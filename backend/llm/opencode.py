@@ -2,7 +2,7 @@ from llm.auth import ServerAuth
 from llm.errors import LLMClientError, LLMModelError
 
 from .client import LLMClient, get_llm_client
-from .schemas import SessionResponse
+from .schemas import SessionResponse, ModelsResponse
 from .server import LLMServer, get_llm_server
 
 
@@ -49,7 +49,19 @@ class Opencode:
 
         return session
 
-    async def prompt(self, text: str):
+    async def get_models(self) -> ModelsResponse:
+        if self._client is None:
+            raise LLMClientError
+
+        return await self._client.list_models()
+
+    async def interrupt(self, session: str) -> bool:
+        if self._client is None:
+            raise LLMClientError
+
+        return await self._client.interrupt(session)
+
+    async def prompt(self, text: str) -> str:
         if self._client is None:
             raise LLMClientError
 

@@ -7,7 +7,13 @@ from llm.auth import ServerAuth
 from llm.errors import LLMClientUnknownType, LLMUnavailable
 
 from .config import Settings
-from .schemas import MessageResponse, PromptResponse, SessionResponse
+from .schemas import (
+    MessageResponse,
+    PromptResponse,
+    SessionResponse,
+    ModelsResponse,
+    InterruptedResponse,
+)
 
 
 class LLMClient:
@@ -51,22 +57,6 @@ class LLMClient:
 
         return self.handle_request(response)
 
-    async def create_client_session(
-        self, model: dict[str, str], **kwargs: Any
-    ) -> SessionResponse:
-        kwargs.setdefault("model", model)
-        response = await self.request(
-            "POST",
-            "/api/session",
-            json_body=kwargs,
-        )
-
-        return SessionResponse.model_validate(response)
-
-    async def list_messages(self, session_id: str) -> MessageResponse:
-        data = await self.request("GET", f"/api/session/{session_id}/message")
-        return MessageResponse.model_validate(data)
-
     async def wait_for_reply(self, session_id: str, prompt: PromptResponse) -> str:
         prompt_id = prompt.data.id
 
@@ -98,6 +88,26 @@ class LLMClient:
 
         raise TimeoutError(f"No idle message for session {session_id} within 120s")
 
+    async def create_client_session(
+        self, model: dict[str, str], **kwargs: Any
+    ) -> SessionResponse:
+        kwargs.setdefault("model", model)
+        response = await self.request(
+            "POST",
+            "/api/session",
+            json_body=kwargs,
+        )
+
+        return SessionResponse.model_validate(response)
+
+    async def list_messages(self, session_id: str) -> MessageResponse:
+        data = await self.request("GET", f"/api/session/{session_id}/message")
+        return MessageResponse.model_validate(data)
+
+    async def list_models(self) -> ModelsResponse:
+        response = await self.request("GET", "/api/model")
+        return ModelsResponse.model_validate(response)
+
     async def post_client_prompt(
         self,
         session_id: str,
@@ -111,6 +121,10 @@ class LLMClient:
         )
 
         return PromptResponse.model_validate(response)
+
+    async def interrupt(self, session: str) -> bool:
+        response = await self.request("POST", f"/api/session/{session}/interrupt")
+        return InterruptedResponse.model_validate(response).interrupted
 
 
 def get_llm_client(url: str, auth: ServerAuth) -> LLMClient:

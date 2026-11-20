@@ -1,5 +1,4 @@
 from collections.abc import Hashable
-from functools import lru_cache
 
 
 class Quard:

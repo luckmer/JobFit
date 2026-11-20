@@ -5,9 +5,9 @@ from fastapi import Depends, HTTPException, UploadFile
 from pypdf import PdfReader
 
 from database.repositories import (
-    LLMRepository,
+    LLMCacheRepository,
     ResumeRepository,
-    get_llm_repository,
+    get_llm_cache_repository,
     get_resume_repository,
 )
 from llm import CV_RATE_PROMPT, CV_SKILLS_PROMPT, Opencode, get_opencode
@@ -18,12 +18,12 @@ from utils import MAX_FILE_SIZE_BYTES, CursorPagination, Quard, get_quard
 class ResumeService:
     def __init__(
         self,
-        llm_repository: LLMRepository,
+        llm_cache_repository: LLMCacheRepository,
         resume_repository: ResumeRepository,
         opencode: Opencode,
         quard: Quard,
     ) -> None:
-        self.llm_repository = llm_repository
+        self.llm_cache_repository = llm_cache_repository
         self.resume_repository = resume_repository
         self.opencode = opencode
         self.quard = quard
@@ -64,7 +64,7 @@ class ResumeService:
         except Exception:
             raise HTTPException(status_code=422, detail="Could not read PDF")
 
-        key = self.llm_repository.build_cache_key(file.filename)
+        key = self.llm_cache_repository.build_cache_key(file.filename)
 
         if not self.quard.add_key(key):
             raise HTTPException(
@@ -87,11 +87,11 @@ class ResumeService:
             self.quard.remove_key(key)
 
     async def rate_resume(self, filename: str, url: str) -> ResumeRatingResponse:
-        cache_id = self.llm_repository.build_cache_key(
+        cache_id = self.llm_cache_repository.build_cache_key(
             filename + url + self.opencode.model
         )
 
-        cache = self.llm_repository.get_cache(cache_id)
+        cache = self.llm_cache_repository.get(cache_id)
 
         if cache is not None:
             return ResumeRatingResponse(rating=cache.message)
@@ -110,7 +110,7 @@ class ResumeService:
 
         try:
             rating = await self.opencode.prompt(prompt)
-            self.llm_repository.save_cache(cache_id, rating)
+            self.llm_cache_repository.save(cache_id, rating)
             return ResumeRatingResponse(rating=rating)
         except Exception as e:
             raise HTTPException(status_code=502, detail=str(e))
@@ -150,7 +150,7 @@ class ResumeService:
 
 
 def get_resume_service(
-    llm_repository: Annotated[LLMRepository, Depends(get_llm_repository)],
+    llm_repository: Annotated[LLMCacheRepository, Depends(get_llm_cache_repository)],
     resume_repository: Annotated[ResumeRepository, Depends(get_resume_repository)],
     opencode: Annotated[Opencode, Depends(get_opencode)],
     quard: Annotated[Quard, Depends(get_quard)],

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class LLmCacheResponse(BaseModel):
+class LLMCacheResponse(BaseModel):
     cache_key: str
     message: str

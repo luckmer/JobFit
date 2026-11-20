@@ -6,7 +6,7 @@ from .job_schema import (
     JobPayloadSchema,
     AppliocationsPayloadSchema,
 )
-from .llm_schema import LLmCacheResponse
+from .llm_schema import LLMCacheResponse
 from .resume_schema import ResumeRatingResponse, ResumeSchema, ResumesResponse, Resume
 
 __all__ = [
@@ -17,7 +17,7 @@ __all__ = [
     "ResumeSchema",
     "ResumesResponse",
     "ResumeRatingResponse",
-    "LLmCacheResponse",
+    "LLMCacheResponse",
     "Resume",
     "JobPayloadSchema",
     "AppliocationsPayloadSchema",

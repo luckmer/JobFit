@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import db
 from llm import opencode
-from routes import health_router, jobs_router, resume_router
+from routes import health_router, jobs_router, resume_router, opencode_router
 
 
 @asynccontextmanager
@@ -34,3 +34,4 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(jobs_router)
 app.include_router(resume_router)
+app.include_router(opencode_router)

@@ -61,14 +61,6 @@ class OpencodeService:
 
     async def set_model(self, model: insertModelSchema) -> ActiveModelResponse:
         models = await self.get_models()
-        llm_model = self.opencode.create_model(model.id, model.provider_id)
-        key = self.llm_repository.build_cache_key(llm_model)
-
-        if not self.quard.add_key(key):
-            raise HTTPException(
-                status_code=409,
-                detail="Model switch already in progress",
-            )
 
         if not any(
             m.id == model.id and m.provider_id == model.provider_id for m in models
@@ -76,15 +68,32 @@ class OpencodeService:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Unknown model")
 
         try:
-            self.llm_repository.set_active_model(llm_model)
+            llm_model = self.opencode.create_model(model.id, model.provider_id)
         except Exception:
             raise HTTPException(
-                status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to set model"
+                status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to create model"
             )
 
-        self.opencode.insert_model(llm_model)
+        key = self.llm_repository.build_cache_key(llm_model)
 
-        return ActiveModelResponse(provider_id=model.provider_id, model_id=model.id)
+        if not self.quard.add_key(key):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Model switch already in progress",
+            )
+
+        try:
+            try:
+                self.llm_repository.set_active_model(llm_model)
+            except Exception:
+                raise HTTPException(
+                    status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to set model"
+                )
+
+            self.opencode.insert_model(llm_model)
+            return ActiveModelResponse(provider_id=model.provider_id, model_id=model.id)
+        finally:
+            self.quard.remove_key(key)
 
     def get_active_model(self):
         try:

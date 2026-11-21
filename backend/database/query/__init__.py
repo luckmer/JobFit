@@ -15,7 +15,13 @@ from .llm_query import (
     insert_llm_model,
     get_llm_model,
 )
-from .resume_query import get_resumes, insert_resume, select_resume_by_filename
+from .resume_query import (
+    get_resumes,
+    insert_resume,
+    select_resume_by_filename,
+    delete_resume,
+    select_resume_by_id,
+)
 
 __all__ = [
     "get_resumes",
@@ -34,4 +40,6 @@ __all__ = [
     "delete_job_application_by_job_id",
     "insert_llm_model",
     "get_llm_model",
+    "delete_resume",
+    "select_resume_by_id",
 ]

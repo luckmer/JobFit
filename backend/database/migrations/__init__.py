@@ -1,5 +1,5 @@
 from .jobs_migration import job_events_table, jobs_table, applications_table
-from .llm import llm_cache_table, llm_profile_table
+from .llm_migration import llm_cache_table, llm_profile_table
 from .resume_migration import resume_table
 
 MIGRATIONS = [

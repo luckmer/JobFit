@@ -182,6 +182,17 @@ class ResumeService:
             next_cursor=next_cursor,
         )
 
+    def delete_resume(self, id: int) -> None:
+        resume = self.resume_repository.get_resume_by_id(id)
+
+        if resume is None:
+            raise HTTPException(status_code=404, detail="Resume not found")
+
+        try:
+            return self.resume_repository.delete_resume(id)
+        except Exception:
+            raise HTTPException(status_code=500, detail="Failed to delete resume")
+
 
 def get_resume_service(
     llm_repository: Annotated[LLMRepository, Depends(get_llm_repository)],

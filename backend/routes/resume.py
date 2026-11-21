@@ -33,3 +33,10 @@ def get_resume(
 ):
 
     return resume_service.get_resumes(cursor, limit)
+
+
+@router.delete("/{id}")
+def delete_resume(
+    id: int, resume_service: Annotated[ResumeService, Depends(get_resume_service)]
+):
+    return resume_service.delete_resume(id)

@@ -3,7 +3,13 @@ from typing import Annotated
 from fastapi import Depends, UploadFile
 
 from database import Database, get_db
-from database.query import get_resumes, insert_resume, select_resume_by_filename
+from database.query import (
+    get_resumes,
+    insert_resume,
+    select_resume_by_filename,
+    select_resume_by_id,
+    delete_resume,
+)
 from schemas import Resume, ResumeSchema
 
 
@@ -40,6 +46,13 @@ class ResumeRepository:
     def get_resumes(self, offset: int = 0, limit: int = 10) -> list[Resume]:
         rows = self.db.fetch_all(get_resumes, (limit, offset))
         return [Resume(**row) for row in rows]
+
+    def delete_resume(self, id: int) -> None:
+        self.db.execute(delete_resume, (id,))
+
+    def get_resume_by_id(self, id: int) -> Resume | None:
+        rows = self.db.fetch_one(select_resume_by_id, (id,))
+        return Resume(**rows) if rows else None
 
 
 def get_resume_repository(

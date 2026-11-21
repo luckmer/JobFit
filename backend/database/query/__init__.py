@@ -9,7 +9,12 @@ from .jobs_query import (
     insert_job_application,
     delete_job_application_by_job_id,
 )
-from .llm_query import get_llm_cache_id, insert_llm_cache_id
+from .llm_query import (
+    get_llm_cache_id,
+    insert_llm_cache_id,
+    insert_llm_model,
+    get_llm_model,
+)
 from .resume_query import get_resumes, insert_resume, select_resume_by_filename
 
 __all__ = [
@@ -27,4 +32,6 @@ __all__ = [
     "insert_llm_cache_id",
     "insert_job_application",
     "delete_job_application_by_job_id",
+    "insert_llm_model",
+    "get_llm_model",
 ]

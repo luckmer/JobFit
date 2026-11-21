@@ -5,9 +5,9 @@ from fastapi import Depends, HTTPException, UploadFile
 from pypdf import PdfReader
 
 from database.repositories import (
-    LLMCacheRepository,
+    LLMRepository,
     ResumeRepository,
-    get_llm_cache_repository,
+    get_llm_repository,
     get_resume_repository,
 )
 from llm import CV_RATE_PROMPT, CV_SKILLS_PROMPT, Opencode, get_opencode
@@ -18,12 +18,12 @@ from utils import MAX_FILE_SIZE_BYTES, CursorPagination, Quard, get_quard
 class ResumeService:
     def __init__(
         self,
-        llm_cache_repository: LLMCacheRepository,
+        llm_repository: LLMRepository,
         resume_repository: ResumeRepository,
         opencode: Opencode,
         quard: Quard,
     ) -> None:
-        self.llm_cache_repository = llm_cache_repository
+        self.llm_repository = llm_repository
         self.resume_repository = resume_repository
         self.opencode = opencode
         self.quard = quard
@@ -42,7 +42,12 @@ class ResumeService:
         if file.filename is None:
             raise HTTPException(status_code=400, detail="Invalid file name")
 
-        if self.resume_repository.get_resume_by_filename(file.filename) is not None:
+        try:
+            existing = self.resume_repository.get_resume_by_filename(file.filename)
+        except Exception:
+            raise HTTPException(status_code=500, detail="Failed to check resume")
+
+        if existing is not None:
             raise HTTPException(status_code=409, detail="Resume already exists")
 
         if file.content_type != "application/pdf":
@@ -54,8 +59,12 @@ class ResumeService:
         if file.size > MAX_FILE_SIZE_BYTES:
             raise HTTPException(status_code=413, detail="File too large")
 
-        header = file.file.read(5)
-        file.file.seek(0)
+        try:
+            header = file.file.read(5)
+            file.file.seek(0)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Could not read file")
+
         if header != b"%PDF-":
             raise HTTPException(status_code=400, detail="Invalid file type")
 
@@ -64,16 +73,19 @@ class ResumeService:
         except Exception:
             raise HTTPException(status_code=422, detail="Could not read PDF")
 
-        key = self.llm_cache_repository.build_cache_key(file.filename)
+        key = self.llm_repository.build_cache_key(file.filename)
 
         if not self.quard.add_key(key):
             raise HTTPException(
                 status_code=409, detail="Resume is already being processed"
             )
 
-        skills = await self.extract_skills(text)
-
         try:
+            try:
+                skills = await self.extract_skills(text)
+            except Exception:
+                raise HTTPException(status_code=502, detail="Failed to extract skills")
+
             self.resume_repository.save_resume(file, skills, text, title, category)
             resume = self.resume_repository.get_resume_by_filename(file.filename)
 
@@ -81,22 +93,32 @@ class ResumeService:
                 raise HTTPException(status_code=404, detail="Resume not found")
 
             return resume
+        except HTTPException:
+            raise
         except IntegrityError:
             raise HTTPException(status_code=409, detail="Resume already exists")
+        except Exception:
+            raise HTTPException(status_code=500, detail="Failed to save resume")
         finally:
             self.quard.remove_key(key)
 
     async def rate_resume(self, filename: str, url: str) -> ResumeRatingResponse:
-        cache_id = self.llm_cache_repository.build_cache_key(
+        cache_id = self.llm_repository.build_cache_key(
             filename + url + self.opencode.model
         )
 
-        cache = self.llm_cache_repository.get(cache_id)
+        try:
+            cache = self.llm_repository.get(cache_id)
+        except Exception:
+            raise HTTPException(status_code=500, detail="Failed to read cache")
 
         if cache is not None:
             return ResumeRatingResponse(rating=cache.message)
 
-        content = self.resume_repository.get_resume_data(filename)
+        try:
+            content = self.resume_repository.get_resume_data(filename)
+        except Exception:
+            raise HTTPException(status_code=500, detail="Failed to load resume")
 
         if content is None:
             raise HTTPException(status_code=404, detail="Resume not found")
@@ -109,11 +131,17 @@ class ResumeService:
             )
 
         try:
-            rating = await self.opencode.prompt(prompt)
-            self.llm_cache_repository.save(cache_id, rating)
+            try:
+                rating = await self.opencode.prompt(prompt)
+            except Exception:
+                raise HTTPException(status_code=502, detail="Failed to generate rating")
+
+            try:
+                self.llm_repository.save(cache_id, rating)
+            except Exception:
+                raise HTTPException(status_code=500, detail="Failed to save rating")
+
             return ResumeRatingResponse(rating=rating)
-        except Exception as e:
-            raise HTTPException(status_code=502, detail=str(e))
         finally:
             self.quard.remove_key(cache_id)
 
@@ -126,11 +154,17 @@ class ResumeService:
         position = None
 
         if cursor is not None:
-            decoded = CursorPagination.decode_cursor(cursor)
+            try:
+                decoded = CursorPagination.decode_cursor(cursor)
+            except Exception:
+                raise HTTPException(status_code=400, detail="Invalid cursor")
             offset = decoded.offset
             position = decoded.position
 
-        resumes = self.resume_repository.get_resumes(position or 0, limit + 1)
+        try:
+            resumes = self.resume_repository.get_resumes(position or 0, limit + 1)
+        except Exception:
+            raise HTTPException(status_code=500, detail="Failed to fetch resumes")
 
         has_next = len(resumes) > limit
         resumes = resumes[:limit]
@@ -150,7 +184,7 @@ class ResumeService:
 
 
 def get_resume_service(
-    llm_repository: Annotated[LLMCacheRepository, Depends(get_llm_cache_repository)],
+    llm_repository: Annotated[LLMRepository, Depends(get_llm_repository)],
     resume_repository: Annotated[ResumeRepository, Depends(get_resume_repository)],
     opencode: Annotated[Opencode, Depends(get_opencode)],
     quard: Annotated[Quard, Depends(get_quard)],

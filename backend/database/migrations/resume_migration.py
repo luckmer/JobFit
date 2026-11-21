@@ -9,5 +9,4 @@ CREATE TABLE IF NOT EXISTS resumes (
     category TEXT,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    
 )"""

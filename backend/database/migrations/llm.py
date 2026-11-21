@@ -5,3 +5,11 @@ CREATE TABLE IF NOT EXISTS llm_cache (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 """
+
+
+llm_profile_table = """
+CREATE TABLE IF NOT EXISTS llm_profile_table (
+  id    INTEGER PRIMARY KEY CHECK (id = 1),
+  model TEXT NOT NULL
+);
+"""

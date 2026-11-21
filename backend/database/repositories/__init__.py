@@ -2,7 +2,7 @@ from .jobs_repository import (
     JobsRepository,
     get_jobs_repository,
 )
-from .llm_cache_repository import LLMCacheRepository, get_llm_cache_repository
+from .llm_repository import LLMRepository, get_llm_repository
 from .resume_repository import ResumeRepository, get_resume_repository
 
 __all__ = [
@@ -12,6 +12,6 @@ __all__ = [
     "get_resume_repository",
     "OpencodeRepository",
     "get_opencode_repository",
-    "LLMCacheRepository",
-    "get_llm_cache_repository",
+    "LLMRepository",
+    "get_llm_repository",
 ]

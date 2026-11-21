@@ -18,19 +18,30 @@ class JobsService:
         cursor: str | None = None,
         limit: int = 10,
     ) -> JobsResponse:
-
         offset = 0
         position = None
 
         if cursor is not None:
-            decoded = CursorPagination.decode_cursor(cursor)
+            try:
+                decoded = CursorPagination.decode_cursor(cursor)
+            except Exception:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid cursor",
+                )
             offset = decoded.offset
             position = decoded.position
 
-        jobs = self.jobs_repository.get_user_recent_jobs(
-            position or 0,
-            limit + 1,
-        )
+        try:
+            jobs = self.jobs_repository.get_user_recent_jobs(
+                position or 0,
+                limit + 1,
+            )
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to fetch jobs",
+            )
 
         has_next = len(jobs) > limit
         jobs = jobs[:limit]
@@ -48,14 +59,21 @@ class JobsService:
             next_cursor=next_cursor,
         )
 
-    def create_job(self, job: CreateJobSchema):
+    def create_job(self, job: CreateJobSchema) -> JobSchema:
         if job.stage not in STATUSES:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid stage",
             )
 
-        job_id = self.jobs_repository.create_user_recent_job(job)
+        try:
+            job_id = self.jobs_repository.create_user_recent_job(job)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create job",
+            )
+
         if job_id is None:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -74,45 +92,73 @@ class JobsService:
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Job was created but could not be retrieved",
                 )
-        except Exception:
-            self.jobs_repository.delete_user_recent_job(job_id)
-            raise
+        except Exception as exc:
+            try:
+                self.jobs_repository.delete_user_recent_job(job_id)
+            except Exception:
+                pass
+
+            if isinstance(exc, HTTPException):
+                raise
+
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create job",
+            )
 
         return created_job
 
     def patch_job(self, job_id: int, payload: JobPatch) -> JobSchema:
-        job = self.jobs_repository.get_job_by_id(job_id)
+        try:
+            job = self.jobs_repository.get_job_by_id(job_id)
 
-        if job is None:
+            if job is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Job not found",
+                )
+
+            if payload.job_payload is not None:
+                self.jobs_repository.patch_job(job_id, payload.job_payload)
+                self.jobs_repository.add_user_job_event(
+                    job_id,
+                    payload.job_payload.stage,
+                    payload.job_payload.event_date,
+                    payload.job_payload.notes,
+                )
+
+            if payload.applications_payload is not None:
+                self.jobs_repository.patch_application(
+                    job_id, payload.applications_payload
+                )
+
+            updated_job = self.jobs_repository.get_job_by_id(job_id)
+
+            if updated_job is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Job not found",
+                )
+
+            return updated_job
+        except HTTPException:
+            raise
+        except Exception:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Job not found",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to update job",
             )
-
-        if payload.job_payload is not None:
-            self.jobs_repository.patch_job(job_id, payload.job_payload)
-            self.jobs_repository.add_user_job_event(
-                job_id,
-                payload.job_payload.stage,
-                payload.job_payload.event_date,
-                payload.job_payload.notes,
-            )
-
-        if payload.applications_payload is not None:
-            self.jobs_repository.patch_application(job_id, payload.applications_payload)
-
-        updated_job = self.jobs_repository.get_job_by_id(job_id)
-
-        if updated_job is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Job not found",
-            )
-
-        return updated_job
 
     def delete_job(self, id: int) -> None:
-        self.jobs_repository.delete_user_recent_job(id)
+        try:
+            self.jobs_repository.delete_user_recent_job(id)
+        except HTTPException:
+            raise
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete job",
+            )
 
 
 def get_jobs_service(

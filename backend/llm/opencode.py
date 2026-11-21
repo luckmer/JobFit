@@ -32,6 +32,9 @@ class Opencode:
             self._server.stop()
             self._server = self._client = None
 
+    def insert_model(self, model: str) -> None:
+        self.model = model
+
     def resolve_model(self, model: str) -> dict[str, str]:
         provider, id = model.split("/", 1)
 
@@ -39,6 +42,9 @@ class Opencode:
             return {"providerID": provider, "id": id}
 
         raise LLMModelError(provider, id)
+
+    def create_model(self, id: str, provider: str) -> str:
+        return f"{provider}/{id}"
 
     async def create_session(self) -> SessionResponse:
         if self._client is None:

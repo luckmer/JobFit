@@ -6,7 +6,12 @@ from .job_schema import (
     JobPayloadSchema,
     AppliocationsPayloadSchema,
 )
-from .llm_schema import LLMCacheResponse
+from .llm_schema import (
+    LLMCacheResponse,
+    insertModelSchema,
+    ActiveModelResponse,
+    ActiveModel,
+)
 from .resume_schema import ResumeRatingResponse, ResumeSchema, ResumesResponse, Resume
 
 __all__ = [
@@ -21,4 +26,7 @@ __all__ = [
     "Resume",
     "JobPayloadSchema",
     "AppliocationsPayloadSchema",
+    "insertModelSchema",
+    "ActiveModelResponse",
+    "ActiveModel",
 ]

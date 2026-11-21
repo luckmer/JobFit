@@ -67,12 +67,7 @@ class OpencodeService:
         ):
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Unknown model")
 
-        try:
-            llm_model = self.opencode.create_model(model.id, model.provider_id)
-        except Exception:
-            raise HTTPException(
-                status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to create model"
-            )
+        llm_model = self.opencode.create_model(model.id, model.provider_id)
 
         key = self.llm_repository.build_cache_key(llm_model)
 

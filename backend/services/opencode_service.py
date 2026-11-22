@@ -85,7 +85,6 @@ class OpencodeService:
                     status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to set model"
                 )
 
-            self.opencode.insert_model(llm_model)
             return ActiveModelResponse(provider_id=model.provider_id, model_id=model.id)
         finally:
             self.quard.remove_key(key)
@@ -94,7 +93,10 @@ class OpencodeService:
         try:
             model = self.llm_repository.get_active_model()
             if model is None:
-                raise HTTPException(status.HTTP_404_NOT_FOUND, "No active model")
+                default_model = self.opencode.model
+                raw = self.opencode.resolve_model(default_model)
+                providerID, id = raw["providerID"], raw["id"]
+                return ActiveModelResponse(provider_id=providerID, model_id=id)
 
             raw = self.opencode.resolve_model(model.model)
             providerID, id = raw["providerID"], raw["id"]

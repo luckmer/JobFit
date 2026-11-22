@@ -34,6 +34,10 @@ class ResumeService:
         return text
 
     async def extract_skills(self, text: str) -> str:
+        model = self.llm_repository.get_active_model()
+        if model is not None:
+            self.opencode.insert_model(model.model)
+
         prompt = CV_SKILLS_PROMPT.replace("{cv_text}", text)
         skills = await self.opencode.prompt(prompt)
         return skills
@@ -132,6 +136,10 @@ class ResumeService:
 
         try:
             try:
+                model = self.llm_repository.get_active_model()
+                if model is not None:
+                    self.opencode.insert_model(model.model)
+
                 rating = await self.opencode.prompt(prompt)
             except Exception:
                 raise HTTPException(status_code=502, detail="Failed to generate rating")

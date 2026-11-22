@@ -1,4 +1,8 @@
-import { JOBS_ENDPOINT, RESUME_ENDPOINT } from "@interfaces/endpoints/enums";
+import {
+  JOBS_ENDPOINT,
+  OPENCODE_ENDPOINT,
+  RESUME_ENDPOINT,
+} from "@interfaces/endpoints/enums";
 
 export const ENDPOINTS = {
   [JOBS_ENDPOINT.JOBS]: "v1/jobs",
@@ -7,4 +11,7 @@ export const ENDPOINTS = {
   [JOBS_ENDPOINT.CREATE]: "v1/jobs",
   [RESUME_ENDPOINT.RESUME_RESUME]: "v1/resume",
   [RESUME_ENDPOINT.RESUME_CREATE]: "v1/resume",
+  [OPENCODE_ENDPOINT.OPENCODE_MODELS]: "v1/opencode",
+  [OPENCODE_ENDPOINT.OPENCODE_ACTIVE_MODEL]: "v1/opencode/active",
+  [OPENCODE_ENDPOINT.OPENCODE_SET_MODEL]: "v1/opencode",
 };

@@ -1,6 +1,7 @@
 "use client";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { jobActions } from "@store/reducers/jobs";
+import { opencodeActions } from "@store/reducers/opencode";
 import { resumeActions } from "@store/reducers/resume";
 import makeStore, { type AppStore } from "@store/store";
 import type { FC, ReactNode } from "react";
@@ -43,6 +44,8 @@ export const RootStoreProvider: FC<IProps> = ({ children }) => {
   useEffect(() => {
     dispatch(jobActions.fetchJobs());
     dispatch(resumeActions.fetchResumes());
+    dispatch(opencodeActions.fetchModels());
+    dispatch(opencodeActions.fetchActiveModel());
   }, [dispatch]);
 
   return children;

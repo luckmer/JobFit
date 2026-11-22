@@ -13,7 +13,7 @@ export const getJobsApi = async () => {
   try {
     return await api.get<JobsResponse>(ENDPOINTS.JOBS);
   } catch (err) {
-    console.log(err, "get jobs error");
+    console.error(err, "get jobs error");
   }
 };
 
@@ -40,7 +40,7 @@ export const createJobApi = async (job: NewApplicationFormValues) => {
       event_date: format(new Date(), "yyyy-MM-dd"),
     });
   } catch (err) {
-    console.log("failed to create job", err);
+    console.error("failed to create job", err);
     throw err;
   }
 };
@@ -62,6 +62,6 @@ export const deleteJobApi = async (id: number) => {
   try {
     await api.delete(`${ENDPOINTS.DELETE}/${id}`);
   } catch (err) {
-    console.log("failed to delete job", err);
+    console.error("failed to delete job", err);
   }
 };

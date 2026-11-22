@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@components/Buttons/Button";
-import { CvCard } from "@components/CvCard";
+import { CvCard } from "@components/Cards/CvCard";
 import { Dropdown } from "@components/Dropdown";
 import { Empty } from "@components/Empty";
 import { Input } from "@components/Input";

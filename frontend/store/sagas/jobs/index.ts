@@ -43,7 +43,7 @@ export function* updateJobStage(
       job_payload: jobPayload,
     });
   } catch (err) {
-    console.log("failed to patch job", err);
+    console.error("failed to patch job", err);
     yield* put(
       jobActions.updateJobStage({
         id: action.payload.id,
@@ -60,7 +60,7 @@ export function* createJob(action: PayloadAction<PayloadTypes["createJob"]>) {
     const job = yield* call(createJobApi, action.payload);
     yield* put(jobActions.setJob(job));
   } catch (err) {
-    console.log("failed to create job", err);
+    console.error("failed to create job", err);
   }
 }
 

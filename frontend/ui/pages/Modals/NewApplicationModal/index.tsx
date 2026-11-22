@@ -1,6 +1,6 @@
 import { Button } from "@components/Buttons/Button";
 import CalendarPicker from "@components/CalendarPicker";
-import CVSelectCard from "@components/CVSelectCard";
+import CVSelectCard from "@components/Cards/CVSelectCard";
 import { Dialog } from "@components/Dialog/Dialog";
 import { DialogContent } from "@components/Dialog/DialogContent";
 import { DialogHeader } from "@components/Dialog/DialogHeader";

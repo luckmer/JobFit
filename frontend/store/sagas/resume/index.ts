@@ -41,7 +41,7 @@ export function* createResume(
     yield* put(resumeActions.setResume(resume));
   } catch (err) {
     yield* put(resumeActions.removeDefaultResume(id));
-    console.log("failed to create job", err);
+    console.error("failed to create job", err);
   }
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@components/Card";
+import { Card } from "@components/Cards/Card";
 import { ColumnHeader } from "@components/ColumnHeader";
 import { FloatingToolbar } from "@components/FloatingToolbar";
 import type { FLOATING_TOOLBAR_KEYS } from "@interfaces/constants/enums";
